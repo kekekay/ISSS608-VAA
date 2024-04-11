@@ -1,11 +1,7 @@
 ---
-title: "ISSS608-VAA"
+title: "ISSS608-VA"
 ---
 
-This is a Quarto website.
+Welcome to my ISSS608 **Visual Analytic and Applications.**
 
-To learn more about Quarto websites visit <https://quarto.org/docs/websites>.
-
-```{r}
-1 + 1
-```
+Reference web [Quarto – HTML Theming](https://quarto.org/docs/output-formats/html-themes.html)

@@ -8,16 +8,18 @@ website:
     - text: "Hands-on Exercise"
       menu:
       - text: "Hands-on Exercise 1"
-        #href:
-
+        href: "Hands_on_exercise/Hands_on_ex1/Hands_on_ex1.qmd"
     right: 
-      - href: index.qmd
+      - href: before_class.qmd
         text: Home
       - about.qmd
 
 format:
   html:
-    theme: morph
+    highlight-style: arrow
+    theme: 
+      light: journal
+      dark: darkly
     css: styles.css
     toc: true
 

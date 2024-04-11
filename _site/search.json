@@ -47,5 +47,12 @@
     "title": "Hands-on ex1",
     "section": "",
     "text": "Code\nggplot(data = exam_data,\n       aes(x=RACE)) +\n  geom_bar()"
+  },
+  {
+    "objectID": "Hands_on_exercise/Hands_on_ex1/Hands_on_ex1.html#comparison-of-base-r-and-ggplot-plot",
+    "href": "Hands_on_exercise/Hands_on_ex1/Hands_on_ex1.html#comparison-of-base-r-and-ggplot-plot",
+    "title": "Hands-on ex1",
+    "section": "2.1 Comparison of Base R and ggplot plot",
+    "text": "2.1 Comparison of Base R and ggplot plot\n\n\nCode\nlibrary(ggplot2)\n\n#R graphic \nhist(exam_data$MATHS)\n\n#ggplot\nggplot(data=exam_data, aes(x = MATHS)) +\n  geom_histogram(bins=10, \n                 boundary = 100,\n                 color=\"black\", \n                 fill=\"grey\") +\n  ggtitle(\"Distribution of Maths scores\")\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nNotes:\n\n\n\n\n\nWhile both approaches achieve similar results, the ggplot2 version can be easily modified and extended with additional layers, themes, and scales without fundamentally altering the underlying code structure. more suitable for complex visualization."
   }
 ]

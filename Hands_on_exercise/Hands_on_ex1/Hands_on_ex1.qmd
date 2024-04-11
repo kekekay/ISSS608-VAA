@@ -7,9 +7,9 @@ format:
     code-tools: true
 ---
 
-# Getting Started
+# 1. Getting Started
 
-## Install and launching R packages
+## 1.1 Install and launching R packages
 
 The code chunk below uses p_load() of pacman package to check if tidyverse pakcges are installed in the computer. If yes, then they will be launched into R environment.
 
@@ -19,7 +19,7 @@ pacman::p_load(tidyverse)
 
 ```
 
-## Checking Working Directory and Importing Data
+## 1.2 Checking Working Directory and Importing Data
 
 ```{r}
 getwd()
@@ -30,10 +30,38 @@ exam_data <- read_csv("Exam_data.csv")
 exam_data
 ```
 
-## Plotting a simple bar chart
+## 1.3 Plotting a simple bar chart
 
 ```{r}
 ggplot(data = exam_data,
        aes(x=RACE)) +
   geom_bar()
 ```
+
+# 2. Introducing `ggplot`
+
+## 2.1 Comparison of Base R and ggplot plot
+
+```{r,fig.show='hold', fig.ncol=2}
+library(ggplot2)
+
+#R graphic 
+hist(exam_data$MATHS)
+
+#ggplot
+ggplot(data=exam_data, aes(x = MATHS)) +
+  geom_histogram(bins=10, 
+                 boundary = 100,
+                 color="black", 
+                 fill="grey") +
+  ggtitle("Distribution of Maths scores")
+
+
+
+```
+
+::: {.callout-note collapse="true"}
+## Notes:
+
+While both approaches achieve similar results, the ggplot2 version can be easily modified and extended with additional layers, themes, and scales without fundamentally altering the underlying code structure. more suitable for complex visualization.
+:::

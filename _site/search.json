@@ -54,5 +54,61 @@
     "title": "Hands-on ex1",
     "section": "2.1 Comparison of Base R and ggplot plot",
     "text": "2.1 Comparison of Base R and ggplot plot\n\n\nCode\nlibrary(ggplot2)\n\n#R graphic \nhist(exam_data$MATHS)\n\n#ggplot\nggplot(data=exam_data, aes(x = MATHS)) +\n  geom_histogram(bins=10, \n                 boundary = 100,\n                 color=\"black\", \n                 fill=\"grey\") +\n  ggtitle(\"Distribution of Maths scores\")\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nNotes:\n\n\n\n\n\nWhile both approaches achieve similar results, the ggplot2 version can be easily modified and extended with additional layers, themes, and scales without fundamentally altering the underlying code structure. more suitable for complex visualization."
+  },
+  {
+    "objectID": "Hands_on_exercise/Hands_on_ex1/Hands_on_ex1.html#call-the-ggplot-function",
+    "href": "Hands_on_exercise/Hands_on_ex1/Hands_on_ex1.html#call-the-ggplot-function",
+    "title": "Hands-on ex1",
+    "section": "3.1 call the ggplot() function",
+    "text": "3.1 call the ggplot() function\n\n\nCode\nggplot(data=exam_data)"
+  },
+  {
+    "objectID": "Hands_on_exercise/Hands_on_ex1/Hands_on_ex1.html#adding-in-x-axis-and-the-axiss-label",
+    "href": "Hands_on_exercise/Hands_on_ex1/Hands_on_ex1.html#adding-in-x-axis-and-the-axiss-label",
+    "title": "Hands-on ex1",
+    "section": "3.2 adding in x-axis and the axis’s label",
+    "text": "3.2 adding in x-axis and the axis’s label\n\n\nCode\nggplot(data=exam_data, \n       aes(x= MATHS))"
+  },
+  {
+    "objectID": "Hands_on_exercise/Hands_on_ex1/Hands_on_ex1.html#essential-grammatical-elements-in-ggplot2-geom",
+    "href": "Hands_on_exercise/Hands_on_ex1/Hands_on_ex1.html#essential-grammatical-elements-in-ggplot2-geom",
+    "title": "Hands-on ex1",
+    "section": "3.3 Essential Grammatical Elements in ggplot2: geom",
+    "text": "3.3 Essential Grammatical Elements in ggplot2: geom\n\n\nCode\n#| fig-cap: \"Geometric Objects: geom_bar VS geom_dotplot vs geom_histogram()\" \n\n#| fig-subcap: \n#| - \"plots a bar chart by using geom_bar()\" \n\n#| - \"geom_dotplot() of ggplot2 is used to plot a dot plot\" \n#| - \"turn off the y-axis &  change the binwidth to 2.5\"\n#| - \"create a simple histogram\"\n#| layout-ncol: 4 \n#| column: page\n\nggplot(data=exam_data, \n       aes(x=RACE)) +\n  geom_bar()\n\nggplot(data=exam_data, \n       aes(x = MATHS)) +\n  geom_dotplot(dotsize = 0.5)\n\n\nBin width defaults to 1/30 of the range of the data. Pick better value with\n`binwidth`.\n\n\nCode\nggplot(data=exam_data, \n       aes(x = MATHS)) +\n  geom_dotplot(binwidth=2.5,         \n               dotsize = 0.5) +      \n  scale_y_continuous(NULL,           \n                     breaks = NULL)  \n\nggplot(data=exam_data, \n       aes(x = MATHS)) +\n  geom_histogram()       \n\n\n`stat_bin()` using `bins = 30`. Pick better value with `binwidth`.\n\n\n\n\n\nFigure 1: ?(caption)\n\n\n\n\n\n\n\nFigure 2: ?(caption)\n\n\n\n\n\n\n\nFigure 3: ?(caption)\n\n\n\n\n\n\n\nFigure 4: ?(caption)\n\n\n\n\n\n\nCode\n#| fig-cap: \"Modifying a Geometric Object \" \n\n#| fig-subcap: \n#| - \"by changing geom()\" \n\n#| - \"by changing aes()\" \n\n#| layout-ncol: 2\n#| column: page\n\nggplot(data=exam_data, \n       aes(x= MATHS)) +\n  geom_histogram(bins=20,            \n                 color=\"black\",      \n                 fill=\"light blue\")  \n\nggplot(data=exam_data, \n       aes(x= MATHS, \n           fill = GENDER)) +\n  geom_histogram(bins=20, \n                 color=\"grey30\")\n\n\n\n\n\nFigure 5: ?(caption)\n\n\n\n\n\n\n\nFigure 6: ?(caption)\n\n\n\n\n\n\nCode\n#| fig-cap: \"Geometric Objects: geom-density() VS geom_boxplot()\" \n\n#| fig-subcap: \n#| - \"geom-density() computes and plots kernel density estimate\" \n\n#| - \"two kernel density lines by using colour or fill arguments of aes()\" \n#| - \"geom_boxplot() displays continuous value list\"\n#| - \"adding notch to help visually assess whether the medians of distributions differ\"\n#| layout-ncol: 4 \n#| column: page\n\nggplot(data=exam_data, \n       aes(x = MATHS)) +\n  geom_density()           \n\nggplot(data=exam_data, \n       aes(x = MATHS, \n           colour = GENDER)) +\n  geom_density()\n\nggplot(data=exam_data, \n       aes(y = MATHS,       \n           x= GENDER)) +    \n  geom_boxplot()            \n\nggplot(data=exam_data, \n       aes(y = MATHS, \n           x= GENDER)) +\n  geom_boxplot(notch=TRUE)    \n\n\n\n\n\nFigure 7: ?(caption)\n\n\n\n\n\n\n\nFigure 8: ?(caption)\n\n\n\n\n\n\n\nFigure 9: ?(caption)\n\n\n\n\n\n\n\nFigure 10: ?(caption)\n\n\n\n\n\n\nCode\n#| fig-cap: \"Geometric Objects: geom_violin VS geom_point()\" \n\n#| fig-subcap: \n#| - \"geom_violin is designed for creating violin plot to compare several distributions side by side\" \n\n#| - \"geom_point() is especially useful for creating scatterplot\" \n\n#| layout-ncol: 2\n#| column: page\n\nggplot(data=exam_data, \n       aes(y = MATHS, \n           x= GENDER)) +\n  geom_violin()\n\nggplot(data=exam_data, \n       aes(x= MATHS, \n           y=ENGLISH)) +\n  geom_point()            \n\n\n\n\n\nFigure 11: ?(caption)\n\n\n\n\n\n\n\nFigure 12: ?(caption)"
+  },
+  {
+    "objectID": "Hands_on_exercise/Hands_on_ex1/Hands_on_ex1.html#combine-geom-objects",
+    "href": "Hands_on_exercise/Hands_on_ex1/Hands_on_ex1.html#combine-geom-objects",
+    "title": "Hands-on ex1",
+    "section": "3.4 Combine geom objects",
+    "text": "3.4 Combine geom objects\nplot the data points on the boxplots by using both geom_boxplot() and geom_point().\n\n\nCode\nggplot(data=exam_data, \n       aes(y = MATHS, \n           x= GENDER)) +\n  geom_boxplot() +                    \n  geom_point(position=\"jitter\", \n             size = 0.5)"
+  },
+  {
+    "objectID": "Hands_on_exercise/Hands_on_ex1/Hands_on_ex1.html#essential-grammatical-elements-in-ggplot2-stat",
+    "href": "Hands_on_exercise/Hands_on_ex1/Hands_on_ex1.html#essential-grammatical-elements-in-ggplot2-stat",
+    "title": "Hands-on ex1",
+    "section": "3.5 Essential Grammatical Elements in ggplot2: stat",
+    "text": "3.5 Essential Grammatical Elements in ggplot2: stat\n\n3.5.1 Working with stat()\n\n\nCode\nggplot(data=exam_data, \n       aes(y = MATHS, x= GENDER)) +\n  geom_boxplot()\n\n\n\n\n\n\n\n3.5.2 using stat_summary() function and overriding the default geom\n\n\nCode\nggplot(data=exam_data, \n       aes(y = MATHS, x= GENDER)) +\n  geom_boxplot() +\n  stat_summary(geom = \"point\",       \n               fun=\"mean\",         \n               colour =\"red\",        \n               size=4)               \n\n\n\n\n\n\n\n3.5.3 using geom_() function and overriding the default stat\n\n\nCode\nggplot(data=exam_data, \n       aes(y = MATHS, x= GENDER)) +\n  geom_boxplot() +\n  geom_point(stat=\"summary\",        \n             fun=\"mean\",           \n             colour =\"red\",          \n             size=4)  \n\n\n\n\n\n\n\n3.5.4 adding a best fit curve on a scatterplot\n\n\nCode\nggplot(data=exam_data, \n       aes(x= MATHS, y=ENGLISH)) +\n  geom_point() +\n  geom_smooth(linewidth=0.5)\n\n\n`geom_smooth()` using method = 'loess' and formula = 'y ~ x'\n\n\n\n\n\n\n\n3.5.5 override default smoothing method from loess to linear model\n\n\nCode\nggplot(data=exam_data, \n       aes(x= MATHS, \n           y=ENGLISH)) +\n  geom_point() +\n  geom_smooth(method=lm, \n              size=0.5)\n\n\nWarning: Using `size` aesthetic for lines was deprecated in ggplot2 3.4.0.\nℹ Please use `linewidth` instead.\n\n\n`geom_smooth()` using formula = 'y ~ x'"
+  },
+  {
+    "objectID": "Hands_on_exercise/Hands_on_ex1/Hands_on_ex1.html#essential-grammatical-elements-in-ggplot2-facets",
+    "href": "Hands_on_exercise/Hands_on_ex1/Hands_on_ex1.html#essential-grammatical-elements-in-ggplot2-facets",
+    "title": "Hands-on ex1",
+    "section": "3.6 Essential Grammatical Elements in ggplot2: Facets",
+    "text": "3.6 Essential Grammatical Elements in ggplot2: Facets\n\n3.6.1 Working with facet_wrap()\nThe facet_grid() function create a grid of plots by specifying rows and columns based on factors.\n\n\nCode\n# Assuming exam_data is already loaded and contains columns MATHS and CLASS\nggplot(data=exam_data, aes(x=MATHS)) +\n  geom_histogram(bins=20) +\n  facet_grid(CLASS ~ .)  # CLASS variable defines the rows\n\n\n\n\n\n\n\nCode\nggplot(data=exam_data, aes(x=MATHS)) +\n  geom_histogram(bins=20) +\n  facet_grid(. ~ CLASS)  # CLASS variable defines the columns\n\n\n\n\n\nfacet_wrap wraps a 1d sequence of panels into 2d. This is generally a better use of screen space than facet_grid because most displays are roughly rectangular.\n\n\nCode\nggplot(data=exam_data, \n       aes(x= MATHS)) +\n  geom_histogram(bins=20) +\n    facet_wrap(~ CLASS)"
+  },
+  {
+    "objectID": "Hands_on_exercise/Hands_on_ex1/Hands_on_ex1.html#essential-grammatical-elements-in-ggplot2-coordinates",
+    "href": "Hands_on_exercise/Hands_on_ex1/Hands_on_ex1.html#essential-grammatical-elements-in-ggplot2-coordinates",
+    "title": "Hands-on ex1",
+    "section": "3.7 Essential Grammatical Elements in ggplot2: Coordinates",
+    "text": "3.7 Essential Grammatical Elements in ggplot2: Coordinates\n\n3.7.1 Working with Coordinate\n\n\nCode\nggplot(data=exam_data, \n       aes(x=RACE)) +\n  geom_bar()\n\n\n\n\n\n\n\n3.7.2 flips the horizontal bar chart into vertical bar chart by using coord_flip()\n\n\nCode\nggplot(data=exam_data, \n       aes(x=RACE)) +\n  geom_bar() +\n  coord_flip()\n\n\n\n\n\n\n\n3.7.3 Changing the y- and x-axis range\n\n\nCode\nggplot(data=exam_data, \n       aes(x= MATHS, y=ENGLISH)) +\n  geom_point() +\n  geom_smooth(method=lm, size=0.5)\n\n\n`geom_smooth()` using formula = 'y ~ x'\n\n\n\n\n\n\n\n\n\n\n\nWarning\n\n\n\nThe scatterplot on the right is slightly misleading because the y-aixs and x-axis range are not equal.\n\n\n\n\n3.7.4 fixed both the y-axis and x-axis range from 0-100.\n\n\nCode\nggplot(data=exam_data, \n       aes(x= MATHS, y=ENGLISH)) +\n  geom_point() +\n  geom_smooth(method=lm, \n              size=0.5) +  \n  coord_cartesian(xlim=c(0,100),\n                  ylim=c(0,100))\n\n\n`geom_smooth()` using formula = 'y ~ x'"
+  },
+  {
+    "objectID": "Hands_on_exercise/Hands_on_ex1/Hands_on_ex1.html#essential-grammatical-elements-in-ggplot2-themes",
+    "href": "Hands_on_exercise/Hands_on_ex1/Hands_on_ex1.html#essential-grammatical-elements-in-ggplot2-themes",
+    "title": "Hands-on ex1",
+    "section": "3.8 Essential Grammatical Elements in ggplot2: themes",
+    "text": "3.8 Essential Grammatical Elements in ggplot2: themes\n\n3.8.1 Working with theme\n\n\nCode\n#| fig-cap: \"theme_gray() VS theme_classic() VS theme_minimal()\" \n\n#| fig-subcap: \n#| - \"horizontal bar chart using theme_gray()\" \n\n#| - \"horizontal bar chart plotted using theme_classic()\" \n#| - \"horizontal bar chart plotted using theme_minimal()\"\n\n#| layout-ncol: 3\n#| column: page\n\n\nggplot(data=exam_data, \n       aes(x=RACE)) +\n  geom_bar() +\n  coord_flip() +\n  theme_gray()\n\nggplot(data=exam_data, \n       aes(x=RACE)) +\n  geom_bar() +\n  coord_flip() +\n  theme_classic()\n\nggplot(data=exam_data, \n       aes(x=RACE)) +\n  geom_bar() +\n  coord_flip() +\n  theme_minimal()\n\n\n\n\n\nFigure 13: ?(caption)\n\n\n\n\n\n\n\nFigure 14: ?(caption)\n\n\n\n\n\n\n\nFigure 15: ?(caption)"
   }
 ]

@@ -65,3 +65,323 @@ ggplot(data=exam_data, aes(x = MATHS)) +
 
 While both approaches achieve similar results, the ggplot2 version can be easily modified and extended with additional layers, themes, and scales without fundamentally altering the underlying code structure. more suitable for complex visualization.
 :::
+
+# 3 Step by step plotting
+
+## 3.1 call the `ggplot()` function
+
+```{r}
+ggplot(data=exam_data)
+```
+
+## 3.2 adding in x-axis and the axis’s label
+
+```{r}
+ggplot(data=exam_data, 
+       aes(x= MATHS))
+```
+
+## 3.3 Essential Grammatical Elements in ggplot2: geom
+
+```{r}
+#| label: fig-mpg2 
+
+#| fig-cap: "Geometric Objects: geom_bar VS geom_dotplot vs geom_histogram()" 
+
+#| fig-subcap: 
+#| - "plots a bar chart by using geom_bar()" 
+
+#| - "geom_dotplot() of ggplot2 is used to plot a dot plot" 
+#| - "turn off the y-axis &  change the binwidth to 2.5"
+#| - "create a simple histogram"
+#| layout-ncol: 4 
+#| column: page
+
+ggplot(data=exam_data, 
+       aes(x=RACE)) +
+  geom_bar()
+
+ggplot(data=exam_data, 
+       aes(x = MATHS)) +
+  geom_dotplot(dotsize = 0.5)
+
+ggplot(data=exam_data, 
+       aes(x = MATHS)) +
+  geom_dotplot(binwidth=2.5,         
+               dotsize = 0.5) +      
+  scale_y_continuous(NULL,           
+                     breaks = NULL)  
+
+ggplot(data=exam_data, 
+       aes(x = MATHS)) +
+  geom_histogram()       
+
+```
+
+```{r}
+#| label: fig-mpg3 
+
+#| fig-cap: "Modifying a Geometric Object " 
+
+#| fig-subcap: 
+#| - "by changing geom()" 
+
+#| - "by changing aes()" 
+
+#| layout-ncol: 2
+#| column: page
+
+ggplot(data=exam_data, 
+       aes(x= MATHS)) +
+  geom_histogram(bins=20,            
+                 color="black",      
+                 fill="light blue")  
+
+ggplot(data=exam_data, 
+       aes(x= MATHS, 
+           fill = GENDER)) +
+  geom_histogram(bins=20, 
+                 color="grey30")
+
+
+```
+
+```{r}
+#| label: fig-mpg4 
+
+#| fig-cap: "Geometric Objects: geom-density() VS geom_boxplot()" 
+
+#| fig-subcap: 
+#| - "geom-density() computes and plots kernel density estimate" 
+
+#| - "two kernel density lines by using colour or fill arguments of aes()" 
+#| - "geom_boxplot() displays continuous value list"
+#| - "adding notch to help visually assess whether the medians of distributions differ"
+#| layout-ncol: 4 
+#| column: page
+
+ggplot(data=exam_data, 
+       aes(x = MATHS)) +
+  geom_density()           
+
+ggplot(data=exam_data, 
+       aes(x = MATHS, 
+           colour = GENDER)) +
+  geom_density()
+
+ggplot(data=exam_data, 
+       aes(y = MATHS,       
+           x= GENDER)) +    
+  geom_boxplot()            
+
+ggplot(data=exam_data, 
+       aes(y = MATHS, 
+           x= GENDER)) +
+  geom_boxplot(notch=TRUE)    
+
+```
+
+```{r}
+#| label: fig-mpg5 
+
+#| fig-cap: "Geometric Objects: geom_violin VS geom_point()" 
+
+#| fig-subcap: 
+#| - "geom_violin is designed for creating violin plot to compare several distributions side by side" 
+
+#| - "geom_point() is especially useful for creating scatterplot" 
+
+#| layout-ncol: 2
+#| column: page
+
+ggplot(data=exam_data, 
+       aes(y = MATHS, 
+           x= GENDER)) +
+  geom_violin()
+
+ggplot(data=exam_data, 
+       aes(x= MATHS, 
+           y=ENGLISH)) +
+  geom_point()            
+```
+
+## 3.4 Combine geom objects
+
+plot the data points on the boxplots by using both `geom_boxplot()` and `geom_point()`.
+
+```{r}
+ggplot(data=exam_data, 
+       aes(y = MATHS, 
+           x= GENDER)) +
+  geom_boxplot() +                    
+  geom_point(position="jitter", 
+             size = 0.5)        
+```
+
+## 3.5 **Essential Grammatical Elements in ggplot2: stat**
+
+### 3.5.1 **Working with `stat()`**
+
+```{r}
+ggplot(data=exam_data, 
+       aes(y = MATHS, x= GENDER)) +
+  geom_boxplot()
+```
+
+### 3.5.2 using stat_summary() function and overriding the default geom
+
+```{r}
+ggplot(data=exam_data, 
+       aes(y = MATHS, x= GENDER)) +
+  geom_boxplot() +
+  stat_summary(geom = "point",       
+               fun="mean",         
+               colour ="red",        
+               size=4)               
+```
+
+### 3.5.3 using geom\_() function and overriding the default stat
+
+```{r}
+ggplot(data=exam_data, 
+       aes(y = MATHS, x= GENDER)) +
+  geom_boxplot() +
+  geom_point(stat="summary",        
+             fun="mean",           
+             colour ="red",          
+             size=4)  
+
+```
+
+### 3.5.4 adding a best fit curve on a scatterplot
+
+```{r}
+ggplot(data=exam_data, 
+       aes(x= MATHS, y=ENGLISH)) +
+  geom_point() +
+  geom_smooth(linewidth=0.5)
+```
+
+### 3.5.5 override default smoothing method from *loess* to *linear model*
+
+```{r}
+ggplot(data=exam_data, 
+       aes(x= MATHS, 
+           y=ENGLISH)) +
+  geom_point() +
+  geom_smooth(method=lm, 
+              size=0.5)
+```
+
+## **3.6 Essential Grammatical Elements in ggplot2: Facets**
+
+### 3.6.1 **Working with `facet_wrap()`**
+
+The facet_grid() function create a grid of plots by specifying rows and columns based on factors.
+
+```{r}
+
+# Assuming exam_data is already loaded and contains columns MATHS and CLASS
+ggplot(data=exam_data, aes(x=MATHS)) +
+  geom_histogram(bins=20) +
+  facet_grid(CLASS ~ .)  # CLASS variable defines the rows
+
+```
+
+```{r}
+ggplot(data=exam_data, aes(x=MATHS)) +
+  geom_histogram(bins=20) +
+  facet_grid(. ~ CLASS)  # CLASS variable defines the columns
+
+```
+
+`facet_wrap` wraps a 1d sequence of panels into 2d. This is generally a better use of screen space than `facet_grid` because most displays are roughly rectangular.
+
+```{r}
+ggplot(data=exam_data, 
+       aes(x= MATHS)) +
+  geom_histogram(bins=20) +
+    facet_wrap(~ CLASS)
+```
+
+## **3.7 Essential Grammatical Elements in ggplot2: Coordinates**
+
+### 3.7.1 **Working with Coordinate**
+
+```{r}
+ggplot(data=exam_data, 
+       aes(x=RACE)) +
+  geom_bar()
+```
+
+### 3.7.2 flips the horizontal bar chart into vertical bar chart by using `coord_flip()`
+
+```{r}
+ggplot(data=exam_data, 
+       aes(x=RACE)) +
+  geom_bar() +
+  coord_flip()
+```
+
+### 3.7.3 **Changing the y- and x-axis range**
+
+```{r}
+ggplot(data=exam_data, 
+       aes(x= MATHS, y=ENGLISH)) +
+  geom_point() +
+  geom_smooth(method=lm, size=0.5)
+```
+
+::: callout-warning
+The scatterplot on the right is slightly misleading because the y-aixs and x-axis range are not equal.
+:::
+
+### 3.7.4 fixed both the y-axis and x-axis range from 0-100.
+
+```{r}
+ggplot(data=exam_data, 
+       aes(x= MATHS, y=ENGLISH)) +
+  geom_point() +
+  geom_smooth(method=lm, 
+              size=0.5) +  
+  coord_cartesian(xlim=c(0,100),
+                  ylim=c(0,100))
+```
+
+## **3.8 Essential Grammatical Elements in ggplot2: themes**
+
+### 3.8.1 **Working with theme**
+
+```{r}
+#| label: fig-mpg1 
+
+#| fig-cap: "theme_gray() VS theme_classic() VS theme_minimal()" 
+
+#| fig-subcap: 
+#| - "horizontal bar chart using theme_gray()" 
+
+#| - "horizontal bar chart plotted using theme_classic()" 
+#| - "horizontal bar chart plotted using theme_minimal()"
+
+#| layout-ncol: 3
+#| column: page
+
+
+ggplot(data=exam_data, 
+       aes(x=RACE)) +
+  geom_bar() +
+  coord_flip() +
+  theme_gray()
+
+ggplot(data=exam_data, 
+       aes(x=RACE)) +
+  geom_bar() +
+  coord_flip() +
+  theme_classic()
+
+ggplot(data=exam_data, 
+       aes(x=RACE)) +
+  geom_bar() +
+  coord_flip() +
+  theme_minimal()
+```

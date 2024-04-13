@@ -354,7 +354,7 @@ ggplot(data=exam_data,
 
 ### 3.8.1 **Working with theme**
 
-```{}
+```         
 ```
 
 ::: panel-tabset
@@ -369,7 +369,7 @@ ggplot(data=exam_data, aes(x=RACE)) +
 
 ## Data
 
-```{ojs}
+```{r}
 ggplot(data=exam_data, aes(x=RACE)) +
   geom_bar() +
   coord_flip() +
@@ -398,5 +398,5 @@ ggplot(data=exam_data, aes(x=RACE)) +
   theme_minimal()
 ```
 
-```{}
+```         
 ```

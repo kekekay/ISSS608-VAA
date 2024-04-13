@@ -1,0 +1,21 @@
+---
+title: "In-class Exercise 1"
+author: "Ke Ke"
+date: "April 13,2024"
+date-modified: "last-modified"
+execute: 
+  eval: true
+  #echo: true display code chunk
+  warning: false
+  freeze: true
+---
+
+```{r}
+pacman::p_load(tidyverse)
+```
+
+```{r}
+realis <- read_csv("data/realis2019.csv")
+#prior setting of folders is important 
+#if use read.csv then outcome wont be a tibl format, all the column names are changed
+```

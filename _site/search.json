@@ -95,6 +95,13 @@
     "href": "Hands_on_exercise/Hands_on_ex1/Hands_on_ex1.html#essential-grammatical-elements-in-ggplot2-themes",
     "title": "Hands-on ex1",
     "section": "3.8 Essential Grammatical Elements in ggplot2: themes",
-    "text": "3.8 Essential Grammatical Elements in ggplot2: themes\n\n3.8.1 Working with theme\n\n\nPlotData\n\n\n\n```{ojs}\nggplot(data=exam_data, aes(x=RACE)) +\n  geom_bar() +\n  coord_flip() +\n  theme_gray()\n```\n\n\n\n\n\n\n\nOJS Syntax Error (line 364, column 8)Assignment to constant variable data\n\n\n\n\n\n\n\n\n\n\n\n```{ojs}\nggplot(data=exam_data, aes(x=RACE)) +\n  geom_bar() +\n  coord_flip() +\n  theme_classic()\n```\n\n\n\n\n\n\n\nOJS Syntax Error (line 373, column 8)Assignment to constant variable data"
+    "text": "3.8 Essential Grammatical Elements in ggplot2: themes\n\n3.8.1 Working with theme\n\n\nPlotData\n\n\n\n```{ojs}\nggplot(data=exam_data, aes(x=RACE)) +\n  geom_bar() +\n  coord_flip() +\n  theme_gray()\n```\n\n\n\n\n\n\n\nOJS Syntax Error (line 364, column 8)Assignment to constant variable data\n\n\n\n\n\n\n\n\n\n\n\n\nCode\nggplot(data=exam_data, aes(x=RACE)) +\n  geom_bar() +\n  coord_flip() +\n  theme_classic()\n\n\n\n\n\n\n\n\n\n\nCode\n# Plot with theme_gray()\nggplot(data=exam_data, aes(x=RACE)) +\n  geom_bar() +\n  coord_flip() +\n  theme_gray()\n\n\n\n\n\nCode\n# Plot with theme_classic()\nggplot(data=exam_data, aes(x=RACE)) +\n  geom_bar() +\n  coord_flip() +\n  theme_classic()\n\n\n\n\n\nCode\n# Plot with theme_minimal()\nggplot(data=exam_data, aes(x=RACE)) +\n  geom_bar() +\n  coord_flip() +\n  theme_minimal()"
+  },
+  {
+    "objectID": "inclass/inclass01/inclass01.html",
+    "href": "inclass/inclass01/inclass01.html",
+    "title": "In-class Exercise 1",
+    "section": "",
+    "text": "pacman::p_load(tidyverse)\n\n\nrealis &lt;- read_csv(\"data/realis2019.csv\")\n#prior setting of folders is important \n#if use read.csv then outcome wont be a tibl format, all the column names are changed"
   }
 ]

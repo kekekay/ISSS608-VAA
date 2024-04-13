@@ -1,24 +1,10 @@
 [
   {
-    "objectID": "index.html",
-    "href": "index.html",
-    "title": "ISSS608-VAA",
-    "section": "",
-    "text": "This is a Quarto website.\nTo learn more about Quarto websites visit https://quarto.org/docs/websites.\n\n1 + 1\n\n[1] 2"
-  },
-  {
     "objectID": "before_class.html",
     "href": "before_class.html",
     "title": "ISSS608-VA",
     "section": "",
-    "text": "Welcome to my ISSS608 Visual Analytic and Applications.\nReference :\nQuarto – HTML Theming\nReports & Presentations with Quarto\nQuarto Basics"
-  },
-  {
-    "objectID": "about.html",
-    "href": "about.html",
-    "title": "About",
-    "section": "",
-    "text": "About this site\n\n1 + 1\n\n[1] 2"
+    "text": "Welcome to my ISSS608 Visual Analytic and Applications.\nReference :\nQuarto – HTML Theming\nReports & Presentations with Quarto\nQuarto Basics\nR for Visual Analytics"
   },
   {
     "objectID": "Hands_on_exercise/Hands_on_ex1/Hands_on_ex1.html",
@@ -109,6 +95,6 @@
     "href": "Hands_on_exercise/Hands_on_ex1/Hands_on_ex1.html#essential-grammatical-elements-in-ggplot2-themes",
     "title": "Hands-on ex1",
     "section": "3.8 Essential Grammatical Elements in ggplot2: themes",
-    "text": "3.8 Essential Grammatical Elements in ggplot2: themes\n\n3.8.1 Working with theme\n\n\nCode\n#| fig-cap: \"theme_gray() VS theme_classic() VS theme_minimal()\" \n\n#| fig-subcap: \n#| - \"horizontal bar chart using theme_gray()\" \n\n#| - \"horizontal bar chart plotted using theme_classic()\" \n#| - \"horizontal bar chart plotted using theme_minimal()\"\n\n#| layout-ncol: 3\n#| column: page\n\n\nggplot(data=exam_data, \n       aes(x=RACE)) +\n  geom_bar() +\n  coord_flip() +\n  theme_gray()\n\nggplot(data=exam_data, \n       aes(x=RACE)) +\n  geom_bar() +\n  coord_flip() +\n  theme_classic()\n\nggplot(data=exam_data, \n       aes(x=RACE)) +\n  geom_bar() +\n  coord_flip() +\n  theme_minimal()\n\n\n\n\n\nFigure 13: ?(caption)\n\n\n\n\n\n\n\nFigure 14: ?(caption)\n\n\n\n\n\n\n\nFigure 15: ?(caption)"
+    "text": "3.8 Essential Grammatical Elements in ggplot2: themes\n\n3.8.1 Working with theme\n\n\nPlotData\n\n\n\n```{ojs}\nggplot(data=exam_data, aes(x=RACE)) +\n  geom_bar() +\n  coord_flip() +\n  theme_gray()\n```\n\n\n\n\n\n\n\nOJS Syntax Error (line 364, column 8)Assignment to constant variable data\n\n\n\n\n\n\n\n\n\n\n\n```{ojs}\nggplot(data=exam_data, aes(x=RACE)) +\n  geom_bar() +\n  coord_flip() +\n  theme_classic()\n```\n\n\n\n\n\n\n\nOJS Syntax Error (line 373, column 8)Assignment to constant variable data"
   }
 ]

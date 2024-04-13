@@ -1,6 +1,8 @@
 ---
 title: "Hands-on ex1"
 author: "Ke Ke"
+date: "12 Apr 2024"
+date-modified: "last-modified"
 format:
   html:
     code-fold: true
@@ -352,36 +354,49 @@ ggplot(data=exam_data,
 
 ### 3.8.1 **Working with theme**
 
+```{}
+```
+
+::: panel-tabset
+## Plot
+
+```{ojs}
+ggplot(data=exam_data, aes(x=RACE)) +
+  geom_bar() +
+  coord_flip() +
+  theme_gray()
+```
+
+## Data
+
+```{ojs}
+ggplot(data=exam_data, aes(x=RACE)) +
+  geom_bar() +
+  coord_flip() +
+  theme_classic()
+```
+:::
+
 ```{r}
-#| label: fig-mpg1 
 
-#| fig-cap: "theme_gray() VS theme_classic() VS theme_minimal()" 
-
-#| fig-subcap: 
-#| - "horizontal bar chart using theme_gray()" 
-
-#| - "horizontal bar chart plotted using theme_classic()" 
-#| - "horizontal bar chart plotted using theme_minimal()"
-
-#| layout-ncol: 3
-#| column: page
-
-
-ggplot(data=exam_data, 
-       aes(x=RACE)) +
+# Plot with theme_gray()
+ggplot(data=exam_data, aes(x=RACE)) +
   geom_bar() +
   coord_flip() +
   theme_gray()
 
-ggplot(data=exam_data, 
-       aes(x=RACE)) +
+# Plot with theme_classic()
+ggplot(data=exam_data, aes(x=RACE)) +
   geom_bar() +
   coord_flip() +
   theme_classic()
 
-ggplot(data=exam_data, 
-       aes(x=RACE)) +
+# Plot with theme_minimal()
+ggplot(data=exam_data, aes(x=RACE)) +
   geom_bar() +
   coord_flip() +
   theme_minimal()
+```
+
+```{}
 ```

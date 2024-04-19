@@ -7,7 +7,7 @@ execute:
   eval: true
   #echo: true display code chunk
   warning: false
-  freeze: true
+  freeze: false
 ---
 
 ```{r}

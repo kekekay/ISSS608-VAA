@@ -7,6 +7,11 @@ format:
   html:
     code-fold: true
     code-tools: true
+execute: 
+  eval: true
+  #echo: true display code chunk
+  warning: false
+  freeze: true
 ---
 
 # 1. Getting Started
@@ -360,7 +365,7 @@ ggplot(data=exam_data,
 ::: panel-tabset
 ## Plot
 
-```{ojs}
+```{r}
 ggplot(data=exam_data, aes(x=RACE)) +
   geom_bar() +
   coord_flip() +

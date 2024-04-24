@@ -1,0 +1,11 @@
+---
+title: "In-Class Exercise 2"
+author: "Ke Ke"
+date: "20 Apr 2024"
+date-modified: "last-modified"
+execute:
+  eval: true
+  echo: true
+  warning: false
+  freeze: true
+---

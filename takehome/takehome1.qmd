@@ -1,0 +1,118 @@
+---
+title: "Take-home Exercise 1"
+author: "Ke Ke"
+date: "18 Apr 2024"
+date-modified: "last-modified"
+execute:
+  warning: false
+  freeze: true
+---
+
+1.  Getting started
+
+    1.1
+
+    ```{r}
+    pacman::p_load(ggplot2,lubridate,ggrepel, patchwork, 
+                   ggthemes, hrbrthemes,
+                   tidyverse) 
+
+    setwd("C:/kekekay/ISSS608-VAA/takehome/data")
+    getwd()
+    ```
+
+```{r}
+full_data <-  list.files(
+                    pattern = "*.csv",
+                    full.names=T) %>%
+                    lapply(read_csv) %>%
+                    bind_rows()
+
+summary(full_data)
+```
+
+```{r}
+
+# Perform exploratory data analysis
+total_transactions <- nrow(full_data)
+date_range <- range(full_data$`Sale Date`, na.rm = TRUE)
+property_types <- unique(full_data$`Property Type`)
+total_property_types <- length(property_types)
+
+# Display the results
+cat("Total Transactions: ", total_transactions, "\n")
+cat("Date Range: From ", date_range[1], " to ", date_range[2], "\n")
+cat("Total Unique Property Types: ", total_property_types, "\n")
+cat("List of Property Types: ", toString(property_types), "\n")
+
+```
+
+```{r}
+cleaned_data <- full_data %>%
+  mutate(
+    `Transacted Price ($)` = as.numeric(gsub(",", "", `Transacted Price ($)`)),
+    `Area (SQFT)` = as.numeric(`Area (SQFT)`),
+    `Unit Price ($ PSF)` = as.numeric(gsub(",", "", `Unit Price ($ PSF)`)),
+    'Nett Price($)'= as.numeric(gsub(",","",'Nett Price($)')),
+    `Sale Date` = dmy(`Sale Date`),
+    `Area (SQM)` = as.numeric(`Area (SQM)`),
+    `Unit Price ($ PSM)` = as.numeric(gsub(",", "", `Unit Price ($ PSM)`))
+  )
+
+summary(cleaned_data)
+
+```
+
+```{r}
+head(cleaned_data)
+
+```
+
+#### **Visualization 1: Distribution of Unit Prices**
+
+```{r}
+p1 <- ggplot(cleaned_data, aes(x = `Unit Price ($ PSF)`)) +
+  geom_histogram(bins = 30, fill = "cornflowerblue", color = "black") +
+  labs(title = "Distribution of Unit Prices in Singapore's Private Residential Market",
+       x = "Unit Price ($ PSF)",
+       y = "Frequency") +
+  theme_wsj()
+
+p2 <- cleaned_data %>%
+  group_by(Month = floor_date(`Sale Date`, "month")) %>%
+  summarize(Average_Price = mean(`Unit Price ($ PSF)`, na.rm = TRUE)) %>%
+  ggplot(aes(x = Month, y = Average_Price)) +
+  geom_line(group = 1, color = "dodgerblue") +
+  labs(title = "Trend of Average Unit Prices Over Time",
+       x = "Month",
+       y = "Average Unit Price ($ PSF)") +
+  theme_wsj()
+
+
+
+p1 / p2
+```
+
+```{r}
+# Aggregate data by Planning Area
+area_prices <- cleaned_data %>%
+  group_by(`Planning Area`) %>%
+  summarize(Average_Price = mean(`Unit Price ($ PSF)`, na.rm = TRUE)) %>%
+  arrange(desc(Average_Price))
+```
+
+```{r}
+# Visualizing the heatmap
+ggplot(area_prices, aes(x = reorder(`Planning Area`, Average_Price), y = 1, fill = Average_Price)) +
+  geom_tile() +
+  scale_fill_gradient(low = "blue", high = "red", name = "Avg. Unit Price\n($ PSF)") +
+  labs(title = "Heatmap of Average Unit Prices by Planning Area in Singapore",
+       x = "Planning Area", y = "") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5),
+        axis.ticks.y = element_blank(),
+        axis.text.y = element_blank(),
+        axis.title.y = element_blank(),
+        panel.grid = element_blank())
+
+```

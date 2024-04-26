@@ -12,7 +12,7 @@ execute:
   freeze: true
 ---
 
-![Take Home Ex1 : Singapore private residential market](images/title.jpg)
+![Take Home Ex1 : Singapore private residential market](images/title.jpg){fig-align="left"}
 
 # Task
 

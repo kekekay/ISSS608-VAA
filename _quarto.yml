@@ -11,14 +11,20 @@ website:
         href: "Hands_on_exercise/Hands_on_ex1/Hands_on_ex1.qmd"
       - text: "Hands-on Exercise 2"
         href: "Hands_on_exercise/Hands_on_ex2/Hands_on_ex2.qmd"
+      - text: "Hands-on Exercise 3"
+        href: "Hands_on_exercise/Hands_on_ex2/Hands_on_ex3.qmd"
     - text: "In-class Exercise"
       menu:
       - text: "In-class Exercise 1"
         href: "inclass/inclass01/inclass01.qmd"
+      - text: "In-class Exercise 2"
+        href: "inclass/inclass01/inclass02.qmd"
     - text: "Take-home Exercise"
       menu:
-      - text: "Take-home Exercise 1"
+      - text: "Part I: Take-home Exercise 1:Singapore Private Residential Market"
         href: "takehome/takehome01/takehome01"
+      - text: "Part II: Take-home Exercise 1: Make-over"
+        href: "takehome/takehome01/takehome011"
     right: 
       - href: before_class.qmd
         text: Home

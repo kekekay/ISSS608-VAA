@@ -22,7 +22,7 @@ website:
     - text: "Take-home Exercise"
       menu:
       - text: "Part I: Take-home Exercise 1:Singapore Private Residential Market"
-        href: "takehome/takehome01"
+        href: "takehome/takehome01.qmd"
       - text: "Part II: Take-home Exercise 1: Make-over"
         href: "takehome/takehome011"
     right: 

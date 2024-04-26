@@ -9,10 +9,10 @@ format:
     code-tools: true
 execute:
   warning: false
-  #freeze: true
+  freeze: true
 ---
 
-![Take Home Ex1 : Singapore private residential market](images/title.jpg){fig-align="left"}
+![](images/title.jpg){fig-align="left"}
 
 # Task
 

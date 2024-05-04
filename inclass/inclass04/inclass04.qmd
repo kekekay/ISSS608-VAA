@@ -1,0 +1,165 @@
+---
+title: "In class ex 04"
+author: "Ke Ke"
+date: "April 20, 2024"
+date-modified: last-modified
+execute: 
+  eval: true
+  echo: true
+  warning: false
+  freeze: true
+---
+
+```{r}
+pacman:: p_load(tidyverse,ggstatsplot)
+```
+
+```{r}
+wh<-read_csv("data/WHData-2018.csv")
+exam<-read_csv("data/exam_data.csv")
+```
+
+```{r}
+set.seed(1234)
+
+#how to extract the data 
+
+p <- gghistostats(
+  data = exam,
+  x = ENGLISH,
+  type = "parametric",
+  test.value = 60,
+  bin.args = list(
+              color = "pink",
+              fill="grey",
+              alpha = 0.7
+  ),
+  normal.curve = FALSE,#default is false
+  normal.curve.args = list(linewidth = 2),
+  xlab = "English scores"
+)
+```
+
+```{r}
+extract_stats(p)
+```
+
+```{r}
+#look for mean
+gghistostats(
+  data = exam,
+  x = ENGLISH,
+  type = "parametric",
+  test.value = 60,
+  bin.args = list(
+              color = "pink",
+              fill="grey",
+              alpha = 0.7
+  ),
+  normal.curve = FALSE,
+  normal.curve.args = list(linewidth = 2),
+  xlab = "English scores"
+)
+```
+
+```{r}
+#look for median
+gghistostats(
+  data = exam,
+  x = ENGLISH,
+  type = "np",
+  test.value = 60,
+  bin.args = list(
+              color = "pink",
+              fill="grey",
+              alpha = 0.7
+  ),
+  normal.curve = FALSE,
+  normal.curve.args = list(linewidth = 2),
+  xlab = "English scores"
+)
+```
+
+```{r}
+#look for trimmed mean
+gghistostats(
+  data = exam,
+  x = ENGLISH,
+  type = "robust",
+  test.value = 60,
+  bin.args = list(
+              color = "pink",
+              fill="grey",
+              alpha = 0.7
+  ),
+  normal.curve = FALSE,
+  normal.curve.args = list(linewidth = 2),
+  xlab = "English scores"
+)
+```
+
+```{r}
+#bayesian
+gghistostats(
+  data = exam,
+  x = ENGLISH,
+  type = "bayes",
+  test.value = 60,
+  bin.args = list(
+              color = "pink",
+              fill="grey",
+              alpha = 0.7
+  ),
+  normal.curve = TRUE,#add in a normal distribution curve 
+  normal.curve.args = list(linewidth = 0.5),
+  xlab = "English scores"
+)
+```
+
+we still can add in confidence interval setting
+
+"a logical value' - \> either a binary or T/F value
+
+```{r}
+ggdotplotstats(
+  data = exam,
+  x = ENGLISH,
+  y = CLASS,
+  title = "",
+  xlab = ""
+)
+```
+
+Before we perform any within group analysis, we need to transform the data.
+
+```{r}
+exam_long <- exam %>%
+  pivot_longer(
+    cols = ENGLISH:SCIENCE,
+    names_to = "SUBJECT",
+    values_to = "SCORES" 
+  )%>%
+  filter(CLASS =="3A")
+```
+
+```{r}
+ggwithinstats(
+  data = exam_long,
+  x = "SUBJECT" ,
+  y = "SCORES" ,
+  type = "NP",
+  title = "wITHIN GROUPS"
+)
+```
+
+```{r}
+ggscatterstats(
+data = exam,
+x = MATHS,
+y = ENGLISH,
+marginal = TRUE,
+label.var = ID,
+label.expression = ENGLISH > 90 & MATHS > 90,
+
+)
+```

@@ -175,7 +175,7 @@ p2 <- cleaned_data %>%
 p2
 ```
 
-In East Region, Apartments, condominiums and terrace houses have shown relative price stability, with condominiums displaying a slight uprend. Detached houses have seen erratic price movements with a sharp rise followed by a decline in sub-sale prices. Executive condominiums display notable price swings throughout the year, overall, it still demonstrates an upward price trend. In contrast, semi-detached houses show a significant dip year-end but recover to a gentle upward trend.
+In East Region, Apartments, condominiums and terrace houses have shown relative price stability, with condominiums displaying a slight uptrend. Detached houses have seen erratic price movements with a sharp rise followed by a decline in sub-sale prices. Executive condominiums display notable price swings throughout the year, overall, it still demonstrates an upward price trend. In contrast, semi-detached houses show a significant dip year-end but recover to a gentle upward trend.
 
 ## North East Region
 

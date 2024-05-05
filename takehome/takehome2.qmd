@@ -26,7 +26,7 @@ In this section, we will review [a classmate's output for Take-home Exercise 1](
 ## Clarity
 
 | Pros                                                                                            | Cons                                                                                                                                                                                                                                                                    |
-|----------------------------------|--------------------------------------|
+|-------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | Data points are distinct and visible                                                            | The clustering of data around certain areas makes it a bit difficult to discern individual data points or trends in those denser regions                                                                                                                                |
 | The inclusion of a trend line helps illustrate the relationship between area and price          | The trend line without filters for property type or sale type, might be misleading. Different types of properties and sales often have different pricing dynamics. A general trend across all types might obscure specific trends that are more actionable or relevant. |
 | The scales on both axes seem appropriate, showing a good spread of data points across the chart | there may be some outlier points or less dense areas that are not fully addressed by the trend analysis                                                                                                                                                                 |
@@ -34,7 +34,7 @@ In this section, we will review [a classmate's output for Take-home Exercise 1](
 ## Aesthetics
 
 | Pros                                                                                                                | Cons                                                                                                                                  |
-|----------------------------------|--------------------------------------|
+|---------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------|
 | The layout is simple and effective, with no unnecessary elements to distract from the data                          | Utilizing a color scale for data points based on another variable (e.g., type of sale) could enhance the visual richness of the plot. |
 | The use of a single color for data points and a contrasting blue for the trend line is effective                    | Varying the point size based on another variable could provide additional layers of information at a glance                           |
 | The gridlines are subtle and do not overpower the data points, which helps in maintaining focus on the data itself. | Lack use of interactive points                                                                                                        |

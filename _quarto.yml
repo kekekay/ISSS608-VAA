@@ -19,6 +19,10 @@ website:
         href: "inclass/inclass01/inclass01.qmd"
       - text: "In-class Exercise 2"
         href: "inclass/inclass02/inclass02.qmd"
+      - text: "In-class Exercise 4"
+        href: "inclass/inclass04/inclass04.qmd"   
+   
+   
     - text: "Take-home Exercise"
       menu:
       - text: "Part I: Take-home Exercise 1:Singapore Private Residential Market"

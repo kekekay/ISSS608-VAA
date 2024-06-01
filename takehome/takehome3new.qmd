@@ -6,6 +6,10 @@ title: "takehome3"
 pacman::p_load(tidytext, readtext, quanteda, tidyverse, jsonlite, igraph, tidygraph, ggraph, visNetwork, clock, graphlayouts)
 ```
 
+## **Importing JSON File**
+
+Direct import of the mc3.json file shows an error message indicating that there's an invalid character in the JSON text, specifically "NaN". As "NaN" is not recognised as a valid value, preprocessing of the JSON file to replace "NaN" is required.
+
 ```{r}
 # Read the JSON file as text
 json_text <- readLines("data/mc3.json" ,warn = FALSE)
@@ -15,4 +19,77 @@ json_text_fixed <- gsub("NaN", "null", json_text)
 
 # Write the fixed JSON text back to a file
 writeLines(json_text_fixed, "data/mc3_fixed.json")
+```
+
+Importing preprocessed mc3_fixed.json file
+
+```{r}
+mc3_data <- fromJSON("data/mc3_fixed.json")
+```
+
+```{r}
+view(mc3_data[["nodes"]])
+view(mc3_data[["links"]])
+```
+
+```{r}
+glimpse(mc3_data)
+```
+
+Missing Values
+
+Identify the percentage of missing values within the dataset
+
+```{r}
+# Function to calculate missing value percentages
+calculate_missing_percentage <- function(df) {
+  total_values <- nrow(df) * ncol(df)
+  missing_values <- sum(is.na(df))
+  missing_percentage <- (missing_values / total_values) * 100
+  return(missing_percentage)
+}
+```
+
+```{r}
+nodes_missing_percentage <- calculate_missing_percentage(mc3_data[["nodes"]])
+nodes_missing_percentage
+```
+
+```{r}
+nodes_missing_by_column <- sapply(mc3_data[["nodes"]], function(x) sum(is.na(x)) / length(x) * 100)
+nodes_missing_by_column
+```
+
+```{r}
+# Print missing percentages
+print(nodes_missing_percentage)
+print(nodes_missing_by_column)
+print(links_missing_percentage)
+print(links_missing_by_column)
+```
+
+::: panel-tabset
+### Observations:
+
+-   **Nodes Data:**
+
+    -   Columns `ProductServices`, `PointOfContact`, `HeadOfOrg`, `founding_date`, `revenue`, and `TradeDescription` have around 85% missing values.
+
+    -   The `dob` column has about 14.7% missing values.
+
+    -   Other columns (`type`, `country`, `_last_edited_by`, `_last_edited_date`, `_date_added`, `_raw_source`, `_algorithm`, and `id`) have no missing values.
+
+-   **Links Data:**
+
+    -   No missing values in the `source`, `target`, and `type` columns.
+
+## Actions:
+
+-   Drop Columns: If columns with around 85% missing values are not crucial for your analysis, consider dropping them.
+
+-   Imputation: For columns like dob with about 14.7% missing values, consider imputing missing values with median or mean (if numerical) or a placeholder (if categorical).
+:::
+
+```{r}
+
 ```

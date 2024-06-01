@@ -24,6 +24,8 @@ pacman::p_load(igraph, tidygraph, ggraph,
                tidyverse, graphlayouts)
 ```
 
+graphlayout - extension of ggraph
+
 ## **The Data**
 
 There are two data sets. One contains the nodes data and the other contains the edges (also know as link) data.
@@ -68,7 +70,7 @@ GAStech_edges <- GAStech_edges %>%
 -   the values in the *Weekday* field are in ordinal scale.
 :::
 
-2.   It consists of individual e-mail flow records. This is not very useful for visualisation. So we will aggregate the individual by date, senders, receivers, main subject and day of the week.
+2.  It consists of individual e-mail flow records. This is not very useful for visualisation. So we will aggregate the individual by date, senders, receivers, main subject and day of the week.
 
 ```{r}
 GAStech_edges_aggregated <- GAStech_edges %>%
@@ -86,7 +88,7 @@ Let's review the revised edges file
 glimpse(GAStech_edges_aggregated)
 ```
 
-##  **Creating network objects using tidygraph**
+## **Creating network objects using tidygraph**
 
 ### **The tbl_graph object**
 
@@ -242,7 +244,7 @@ There are three functions in ggraph to implement faceting, they are:
 
 -   [*facet_graph()*](https://ggraph.data-imaginist.com/reference/facet_graph.html) faceting on two variables simultaneously.
 
-###  **Working with *facet_edges()* - Basic** 
+### **Working with *facet_edges()* - Basic**
 
 ```{r}
 set_graph_style()

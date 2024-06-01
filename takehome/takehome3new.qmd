@@ -1,0 +1,18 @@
+---
+title: "takehome3"
+---
+
+```{r}
+pacman::p_load(tidytext, readtext, quanteda, tidyverse, jsonlite, igraph, tidygraph, ggraph, visNetwork, clock, graphlayouts)
+```
+
+```{r}
+# Read the JSON file as text
+json_text <- readLines("data/mc3.json" ,warn = FALSE)
+
+# Replace "NaN" with "null"
+json_text_fixed <- gsub("NaN", "null", json_text)
+
+# Write the fixed JSON text back to a file
+writeLines(json_text_fixed, "data/mc3_fixed.json")
+```

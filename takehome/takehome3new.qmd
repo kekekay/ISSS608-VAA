@@ -33,7 +33,7 @@ view(mc3_data[["links"]])
 ```
 
 ```{r}
-glimpse(mc3_data)
+head(mc3_data)
 ```
 
 Missing Values
@@ -61,6 +61,14 @@ nodes_missing_by_column
 ```
 
 ```{r}
+links_missing_percentage <- calculate_missing_percentage(mc3_data[["links"]])
+links_missing_percentage
+
+links_missing_by_column <- sapply(mc3_data[["links"]], function(x) sum(is.na(x)) / length(x) * 100)
+links_missing_by_column
+```
+
+```{r}
 # Print missing percentages
 print(nodes_missing_percentage)
 print(nodes_missing_by_column)
@@ -73,7 +81,7 @@ print(links_missing_by_column)
 
 -   **Nodes Data:**
 
-    -   Columns `ProductServices`, `PointOfContact`, `HeadOfOrg`, `founding_date`, `revenue`, and `TradeDescription` have around 85% missing values.
+    -   `ProductServices`, `PointOfContact`, `HeadOfOrg`, `founding_date`, `revenue`, and `TradeDescription` columns have a high percentage of missing values (around 85%).
 
     -   The `dob` column has about 14.7% missing values.
 
@@ -81,13 +89,15 @@ print(links_missing_by_column)
 
 -   **Links Data:**
 
-    -   No missing values in the `source`, `target`, and `type` columns.
+    -   `end_date` has a very high percentage of missing values (around 99.5%).
 
 ## Actions:
 
--   Drop Columns: If columns with around 85% missing values are not crucial for your analysis, consider dropping them.
+-   If columns with around 85% missing values are not crucial for the analysis, shall consider dropping them.
 
--   Imputation: For columns like dob with about 14.7% missing values, consider imputing missing values with median or mean (if numerical) or a placeholder (if categorical).
+-   For columns like dob with about 14.7% missing values, we can fill missing values with a placeholder like "Unknown".
+
+-   Since `end_date` has a very high percentage of missing values, consider removing this column unless it is critical for the analysis.
 :::
 
 ```{r}

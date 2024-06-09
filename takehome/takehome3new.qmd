@@ -39,6 +39,7 @@ Importing preprocessed mc3_fixed.json file
 
 ```{r}
 mc3_data <- fromJSON("data/mc3_fixed.json")
+
 ```
 
 ## Data Cleaning
@@ -81,7 +82,7 @@ links_missing_by_column
 Print missing percentages
 
 ```{r}
-
+# 
 print(nodes_missing_percentage)
 print(nodes_missing_by_column)
 print(links_missing_percentage)
@@ -90,8 +91,6 @@ print(links_missing_by_column)
 
 ::: panel-tabset
 ## Observations:
-
-::: panel-tabset
 
 -   **Nodes Data:**
 
@@ -104,7 +103,6 @@ print(links_missing_by_column)
 -   **Links Data:**
 
     -   `end_date` has a very high percentage of missing values (around 99.5%).
-:::
 
 ## Actions:
 
@@ -115,7 +113,7 @@ print(links_missing_by_column)
 -   Filled missing values in `start_date` and `end_date` with "Unknown".
 :::
 
-Handle missing values in nodes
+Handle missing values
 
 ```{r}
 
@@ -162,11 +160,6 @@ cleaned_links <- cleaned_links %>%
     `_raw_source` = as.character(`_raw_source`),
     `_algorithm` = as.character(`_algorithm`)
   )
-
-# Print cleaned data for inspection
-
-glimpse(cleaned_nodes)
-glimpse(cleaned_links)
 
 
 

@@ -12,6 +12,10 @@ execute:
   freeze: true
 ---
 
+In this VAST Challenge project, we analyze the impact of SouthSeafood Express Corp's illegal fishing on the business network. The first question explores how the network and competing businesses change due to the incident. The second question identifies which companies benefited from SouthSeafood Express Corp's legal troubles.
+
+## Getting Started
+
 ```{r}
 pacman::p_load(tidytext, readtext, quanteda, tidyverse, jsonlite, igraph, tidygraph, ggraph, visNetwork, clock, graphlayouts,ggplot2)
 ```
@@ -270,11 +274,11 @@ write_rds(cleaned_links, "data/rds/cleaned_links.rds")
 glimpse(cleaned_links)
 ```
 
-## Question 3: the influence of a company changes through time
+## Question 3
 
 By analyzing the ownership structure, we tracked changes in most influential individuals (VIP) networks over time, identifying key individuals with increasing influence.
 
-### Part 1: a. Data Wrangling 
+### Part 1: Data Wrangling 
 
 Split the nodes into people and companies, and filter ownership-related edges
 
@@ -345,7 +349,7 @@ glimpse(vip_connections)
 
 ```
 
-### Part 1: b. Network Graph 
+### Part 1: Network Graph 
 
 Finally, plot the network, highlighting the structure and connections of influential individuals.
 
@@ -518,3 +522,190 @@ In 2035, the network structure shifts to a star-like formation, where a central 
 ::: callout-caution
 Initially, influence is distributed among several key players, but over the years, it becomes concentrated among fewer individuals, leading to a highly centralized network by 2035. This centralization of power can be both an opportunity for streamlined decision-making and a risk for monopolistic control. Monitoring these changes is crucial for regulatory bodies like FishEye to ensure fair practices and prevent illegal activities within the network.
 :::
+
+## Question 4
+
+For part 1, the focus was on identifying the network associated with SouthSeafood Express Corp and visualizing how this network and competing businesses changed as a result of their illegal fishing behavior.
+
+#### Part 1: Identify SouthSeafood Express Corp Node
+
+```{r}
+
+# Extract edges connected to SouthSeafood Express Corp
+southseafood_edges <- cleaned_links %>%
+  filter(source == "SouthSeafood Express Corp" | target == "SouthSeafood Express Corp")%>%
+  select(source,target,start_date,end_date,event2)
+
+# Ensure all nodes in the edge list are present in the vertex data frame
+southseafood_nodes <- cleaned_nodes %>%
+  filter(id %in% (c(southseafood_edges$source, southseafood_edges$target)))
+
+# Join edges with nodes to ensure all nodes are present
+southseafood_edges <- southseafood_edges %>%
+  filter(source %in% southseafood_nodes$id & target %in% southseafood_nodes$id)
+
+# Create graph object for the sub-network
+g_southseafood <- graph_from_data_frame(d = southseafood_edges, vertices = southseafood_nodes, directed = TRUE)
+
+# Visualize the initial network
+plot(g_southseafood, vertex.label = NA, vertex.size = 5, edge.arrow.size = 0.5, 
+     vertex.color = "orange", main = "Network Associated with SouthSeafood Express Corp")
+
+```
+
+#### Part 1: Identify Competing Businesses
+
+```{r}
+# Assume competing businesses are defined by their type (e.g., FishingCompany)
+competing_businesses <- cleaned_nodes %>%
+  filter(entity3 == "FishingCompany" & id != "SouthSeafood Express Corp")
+
+print(competing_businesses)
+
+```
+
+```{r}
+competing_edges <- cleaned_links %>%
+  filter(source %in% competing_businesses$id | target %in% competing_businesses$id) %>%
+  select(source, target, start_date, end_date, event2)
+
+# Combine SouthSeafood Express Corp edges with competing businesses edges
+combined_edges <- bind_rows(southseafood_edges, competing_edges)
+
+# Extract the combined set of nodes
+combined_nodes <- cleaned_nodes %>%
+  filter(id %in% c(combined_edges$source, combined_edges$target))
+```
+
+```{r}
+# Create graph object for the combined network
+g_combined <- graph_from_data_frame(d = combined_edges, vertices = combined_nodes, directed = TRUE)
+
+```
+
+#### Part 1: Analyze Temporal Changes based on *start_year*
+
+```{r}
+# Assume the accident happened in 2023
+incident_year <- 2023
+
+# Filter edges before the incident
+edges_before <- combined_edges %>%
+  filter(format(start_date, "%Y") < incident_year)
+
+# Filter edges after the incident
+edges_after <- combined_edges %>%
+  filter(format(start_date, "%Y") >= incident_year)
+
+# Create graph objects for before and after the incident
+g_before <- graph_from_data_frame(d = edges_before, vertices = combined_nodes, directed = TRUE)
+g_after <- graph_from_data_frame(d = edges_after, vertices = combined_nodes, directed = TRUE)
+
+```
+
+#### Part 1: Visualize the Temporal Changes
+
+```{r}
+par(mfrow = c(2, 1))
+
+plot_before <- ggraph(g_before, layout = "fr") +
+  geom_edge_link(aes(edge_alpha = 0.8), show.legend = FALSE, color = "gray", width = 1) +
+  geom_node_point(aes(color = ifelse(name == "SouthSeafood Express Corp", "SouthSeafood", 
+                                     ifelse(type == "Entity.Organization.FishingCompany", "FishingCompany", "Other"))), 
+                  size = 3, alpha = 0.6, show.legend = TRUE) + # Adjusted alpha for transparency
+  scale_color_manual(values = c("SouthSeafood" = "red", "FishingCompany" = "blue", "Other" = "orange"),
+                     name = "Type") + # Shortened legend title
+  theme_void() +
+  theme(legend.position = "bottom") +
+  labs(title = "Network Before Incident")
+
+# Show the plot for the network before the incident
+plot_before
+
+
+plot_after <- ggraph(g_after, layout = "fr") +
+  geom_edge_link(aes(edge_alpha = 0.8), show.legend = FALSE, color = "gray", width = 1) +
+  geom_node_point(aes(color = ifelse(name == "SouthSeafood Express Corp", "SouthSeafood", 
+                                     ifelse(type == "Entity.Organization.FishingCompany", "FishingCompany", "Other"))), 
+                  size = 3, alpha = 0.6, show.legend = TRUE) + # Adjusted alpha for transparency
+  scale_color_manual(values = c("SouthSeafood" = "red", "FishingCompany" = "blue", "Other" = "orange"),
+                     name = "Type") + # Shortened legend title
+  theme_void() +
+  theme(legend.position = "bottom") +
+  labs(title = "Network After Incident")
+
+# Show the plot for the network after the incident
+plot_after
+
+
+```
+
+::: callout-note
+**Observations**:
+
+-   The number of blue nodes (fishing companies) appears to have decreased.
+
+-   SouthSeafood Express Corp (red node) remains central but its connections might have changed, indicating possible impact from the incident.
+:::
+
+For part 2, since we cannot use revenue data over time, we will focus on identifying which companies potentially benefited from SouthSeafood Express Corp's legal troubles by analyzing changes in network centrality measures.
+
+#### Part 2: Calculate Centrality Measures Before and After the Incident
+
+```{r}
+# Calculate degree centrality before the incident
+degree_before <- degree(g_before, mode = "all")
+
+# Calculate degree centrality after the incident
+degree_after <- degree(g_after, mode = "all")
+
+# Combine degree centrality measures into a data frame
+centrality_change <- data.frame(
+  id = names(degree_before),
+  degree_before = degree_before,
+  degree_after = degree_after
+)
+
+# Calculate the change in degree centrality
+centrality_change <- centrality_change %>%
+  mutate(change = degree_after - degree_before)
+
+# Display companies with the most positive change in degree centrality
+top_beneficiaries <- centrality_change %>%
+  arrange(desc(change)) %>%
+  head(10)
+
+print(top_beneficiaries)
+
+```
+
+#### Part 2: Determine Entity Type
+
+```{r}
+# Merge with cleaned_nodes to get the entity type
+top_beneficiaries_info <- top_beneficiaries %>%
+  left_join(cleaned_nodes, by = c("id" = "id")) %>%
+  select(id, change,entity3)
+
+# Display the entity type of top beneficiaries
+print(top_beneficiaries_info)
+
+```
+
+#### Part 2: Visualize the Changes 
+
+```{r}
+
+# Bar plot of top beneficiaries
+ggplot(top_beneficiaries_info, aes(x = reorder(id, change), y = change)) +
+  geom_bar(stat = "identity", fill = "lightblue") +
+  coord_flip() +
+  theme_minimal() +
+  labs(title = "Top Beneficiaries by Change in Degree Centrality",
+       x = "Company",
+       y = "Change in Degree Centrality",
+       fill = "Entity Type") +
+  theme(legend.position = "none")
+```
+
+The results show that the top beneficiaries, all classified as fishing companies, significantly increased their network centrality following SouthSeafood Express Corp's legal troubles. Anderson-Roberts, Hall, Hartman and Hall, and Kirk Inc., among others, saw the largest gains, suggesting they capitalized on the shift in the network's structure.

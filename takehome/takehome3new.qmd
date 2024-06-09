@@ -1,5 +1,15 @@
 ---
 title: "takehome3"
+author: "Ke Ke"
+date: "18 May 2024"
+date-modified: "last-modified"
+format:
+  html:
+    code-fold: true
+    code-tools: true
+execute:
+  warning: false
+  freeze: true
 ---
 
 ```{r}
@@ -103,7 +113,7 @@ Actions:
 # Handle missing values in nodes
 # Select crucial columns and fill missing values where appropriate
 cleaned_nodes <- mc3_data[["nodes"]] %>%
-  select(id, type, country, HeadOfOrg, revenue,
+  select(id, type, country, HeadOfOrg, revenue,ProductServices,PointOfContact,founding_date,TradeDescription,dob,
          `_last_edited_by`, `_last_edited_date`, `_date_added`, `_raw_source`, `_algorithm`) %>%
   mutate(HeadOfOrg = ifelse(is.na(HeadOfOrg), "Unknown", HeadOfOrg),
          revenue = ifelse(is.na(revenue), 0, revenue))
@@ -111,7 +121,7 @@ cleaned_nodes <- mc3_data[["nodes"]] %>%
 # Handle missing values in links
 # Select crucial columns and fill missing values where appropriate
 cleaned_links <- mc3_data[["links"]] %>%
-  select(source, target, type, start_date, end_date, `_last_edited_by`, `_last_edited_date`, `_date_added`, `_raw_source`, `_algorithm`) %>%
+  select(key,source, target, type, start_date, end_date, `_last_edited_by`, `_last_edited_date`, `_date_added`, `_raw_source`, `_algorithm`) %>%
   mutate(start_date = ifelse(is.na(start_date), "Unknown", start_date),
          end_date = ifelse(is.na(end_date), "Unknown", end_date))
 
@@ -153,14 +163,10 @@ glimpse(cleaned_links)
 
 ```
 
-### Check for duplicates and data types
+### Check for data types
 
 ```{r}
-# Check for duplicate nodes
-cleaned_nodes <- cleaned_nodes %>% distinct()
 
-# Check for duplicate edges
-cleaned_links <- cleaned_links %>% distinct()
 
 # Ensure correct data types for nodes
 cleaned_nodes <- cleaned_nodes %>%
@@ -170,11 +176,14 @@ cleaned_nodes <- cleaned_nodes %>%
     country = as.character(country),
     HeadOfOrg = as.character(HeadOfOrg),
     revenue = as.numeric(revenue),
+      dob = as.POSIXct(dob, format="%Y-%m-%dT%H:%M:%S"),
     `_last_edited_by` = as.character(`_last_edited_by`),
     `_last_edited_date` = as.POSIXct(`_last_edited_date`, format="%Y-%m-%dT%H:%M:%S"),
+    founding_date=as.POSIXct(founding_date, format="%Y-%m-%dT%H:%M:%S"),
     `_date_added` = as.POSIXct(`_date_added`, format="%Y-%m-%dT%H:%M:%S"),
     `_raw_source` = as.character(`_raw_source`),
     `_algorithm` = as.character(`_algorithm`)
+    
   )
 
 # Ensure correct data types for links
@@ -184,7 +193,7 @@ cleaned_links <- cleaned_links %>%
     target = as.character(target),
     type = as.character(type),
     start_date = as.POSIXct(start_date, format="%Y-%m-%dT%H:%M:%S"),
-    end_date = ifelse(end_date == "Unknown", NA, as.POSIXct(end_date, format="%Y-%m-%dT%H:%M:%S")),
+    end_date = as.POSIXct(end_date, format="%Y-%m-%dT%H:%M:%S"),
     `_last_edited_by` = as.character(`_last_edited_by`),
     `_last_edited_date` = as.POSIXct(`_last_edited_date`, format="%Y-%m-%dT%H:%M:%S"),
     `_date_added` = as.POSIXct(`_date_added`, format="%Y-%m-%dT%H:%M:%S"),
@@ -220,7 +229,19 @@ cleaned_links<- cleaned_links %>%
 ### Split *'type'* column into separate columns
 
 ```{r}
-word_list <- strsplit(cleaned_nodes$type, "\\.")
+word_list1 <- strsplit(cleaned_nodes$type, "\\.")
+max_elements1 <- max(lengths(word_list1))
+word_list_padded1 <- lapply(word_list1, 
+function(x) c(x, rep(NA, max_elements1 - length(x))))
+word_df1 <- do.call(rbind, word_list_padded1)
+colnames(word_df1) <- paste0("entity", 1:max_elements1)
+word_df1 <- as_tibble(word_df1) %>%
+  select(entity2, entity3)
+class(word_df1)
+```
+
+```{r}
+word_list <- strsplit(cleaned_links$type, "\\.")
 max_elements <- max(lengths(word_list))
 word_list_padded <- lapply(word_list, 
 function(x) c(x, rep(NA, max_elements - length(x))))
@@ -233,11 +254,27 @@ class(word_df)
 
 ```{r}
 cleaned_nodes <- cleaned_nodes %>%
+  cbind(word_df1)
+```
+
+```{r}
+cleaned_links <- cleaned_links %>%
   cbind(word_df)
 ```
 
 ```{r}
 write_rds(cleaned_nodes, "data/rds/cleaned_nodes.rds")
+write_rds(cleaned_links, "data/rds/cleaned_links.rds")
 ```
 
-first question
+```{r}
+glimpse(cleaned_links)
+```
+
+## 
+
+```{r}
+
+
+
+```

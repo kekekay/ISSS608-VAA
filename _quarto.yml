@@ -29,6 +29,8 @@ website:
         href: "takehome/takehome1.qmd"
       - text: "Part II: Take-home Exercise 1: Make-over"
         href: "takehome/takehome2.qmd"
+      - text: "Part III: Take-home Exercise 2: Vast Challenge - MC3"
+        href: "takehome/takehome3new.qmd"
     right: 
       - href: before_class.qmd
         text: Home

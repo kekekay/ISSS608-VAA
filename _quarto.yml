@@ -20,7 +20,7 @@ website:
       - text: "In-class Exercise 2"
         href: "inclass/inclass02/inclass02.qmd"
       - text: "In-class Exercise 4"
-        href: "inclass/inclass04/inclass04.qmd"   
+        href:    
    
    
     - text: "Take-home Exercise"

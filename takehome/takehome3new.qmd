@@ -93,12 +93,85 @@ print(links_missing_by_column)
 
 ## Actions:
 
--   If columns with around 85% missing values are not crucial for the analysis, shall consider dropping them.
+-   Filled missing values in `HeadOfOrg` with "Unknown".
 
--   For columns like dob with about 14.7% missing values, we can fill missing values with a placeholder like "Unknown".
+-   Filled missing values in `revenue` with 0.
 
--   Since `end_date` has a very high percentage of missing values, consider removing this column unless it is critical for the analysis.
+-   Filled missing values in `start_date` and `end_date` with "Unknown".
 :::
+
+```{r}
+
+
+# Handle missing values in nodes
+# Select crucial columns and fill missing values where appropriate
+cleaned_nodes <- mc3_data[["nodes"]] %>%
+  select(id, type, country, HeadOfOrg, revenue,
+         `_last_edited_by`, `_last_edited_date`, `_date_added`, `_raw_source`, `_algorithm`) %>%
+  mutate(HeadOfOrg = ifelse(is.na(HeadOfOrg), "Unknown", HeadOfOrg),
+         revenue = ifelse(is.na(revenue), 0, revenue))
+
+# Handle missing values in links
+# Select crucial columns and fill missing values where appropriate
+cleaned_links <- mc3_data[["links"]] %>%
+  select(source, target, type, start_date, end_date, `_last_edited_by`, `_last_edited_date`, `_date_added`, `_raw_source`, `_algorithm`) %>%
+  mutate(start_date = ifelse(is.na(start_date), "Unknown", start_date),
+         end_date = ifelse(is.na(end_date), "Unknown", end_date))
+
+# Ensure proper data types
+cleaned_nodes <- cleaned_nodes %>%
+  mutate(
+    id = as.character(id),
+    type = as.character(type),
+    country = as.character(country),
+    HeadOfOrg = as.character(HeadOfOrg),
+    revenue = as.numeric(revenue),
+    `_last_edited_by` = as.character(`_last_edited_by`),
+    `_last_edited_date` = as.character(`_last_edited_date`),
+    `_date_added` = as.character(`_date_added`),
+    `_raw_source` = as.character(`_raw_source`),
+    `_algorithm` = as.character(`_algorithm`)
+  )
+
+cleaned_links <- cleaned_links %>%
+ mutate(
+    source = as.character(source),
+    target = as.character(target),
+    type = as.character(type),
+    start_date = as.character(start_date),
+    end_date = as.character(end_date),
+    `_last_edited_by` = as.character(`_last_edited_by`),
+    `_last_edited_date` = as.character(`_last_edited_date`),
+    `_date_added` = as.character(`_date_added`),
+    `_raw_source` = as.character(`_raw_source`),
+    `_algorithm` = as.character(`_algorithm`)
+  )
+
+# Print cleaned data for inspection
+
+glimpse(cleaned_nodes)
+glimpse(cleaned_links)
+
+
+
+```
+
+check for duplicates
+
+```{r}
+# Check for duplicate nodes
+cleaned_nodes <- cleaned_nodes %>% distinct()
+
+# Check for duplicate edges
+cleaned_links <- cleaned_links %>% distinct()
+
+# Print cleaned data for inspection
+glimpse(cleaned_nodes)
+glimpse(cleaned_links)
+
+```
+
+first question
 
 ```{r}
 

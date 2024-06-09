@@ -270,7 +270,13 @@ write_rds(cleaned_links, "data/rds/cleaned_links.rds")
 glimpse(cleaned_links)
 ```
 
-## 
+## Question 3: the influence of a company changes through time
+
+By analyzing the ownership structure, we tracked changes in most influential individuals (VIP) networks over time, identifying key individuals with increasing influence.
+
+### Part 1: a. Data Wrangling 
+
+Split the nodes into people and companies, and filter ownership-related edges
 
 ```{r}
 # Split the nodes into people and companies
@@ -309,6 +315,8 @@ print(owns_summary)
 
 ```
 
+To define and identify influential people based on an ownership threshold. It filters the nodes to keep only those with a significant number of ownerships
+
 ```{r}
 # Define the threshold for 'influential'
 vip_threshold <- 91
@@ -324,6 +332,8 @@ glimpse(vip)
 
 ```
 
+filter the ownership connections to include only those involving these influential individuals
+
 ```{r}
 # Filter links_owns to keep only those connections where the source is in the vip list
 vip_connections <- links_owns %>%
@@ -334,6 +344,10 @@ vip_connections <- links_owns %>%
 glimpse(vip_connections)
 
 ```
+
+### Part 1: b. Network Graph 
+
+Finally, plot the network, highlighting the structure and connections of influential individuals.
 
 ```{r}
 # Create graph from VIP connections
@@ -355,7 +369,9 @@ The plot represents the VIP Connections Network, with blue nodes indicating infl
 
 While this plot provides a static snapshot, in the following we shall create similar plots for different time periods can reveal changes in ownership and influence over time.
 
-### Aggregate Ownership Changes by Year
+### Part 2: Temporal Analysis 
+
+Aggregate Ownership Changes by Year
 
 ```{r}
 change_over_time1 <- links_owns %>%
@@ -388,10 +404,12 @@ ggplot(change_over_time, aes(x = as.numeric(start_year), y = count)) +
 
 ```
 
-Given the significant increase in data from 2005 onwards, focusing on every 5 years from 2005 to 2035 would provide a more detailed analysis of changes in ownership and influence.
+### Part 2: Network Graph by Year
+
+Given the significant increase in data from 2004 onwards, focusing on every 10 years from 2005 to 2035 would provide a more detailed analysis of changes in ownership and influence.
 
 ```{r}
-# Specify the year you want to filter by
+# Specify the year 
 filter_year <- 2005
 
 # Filter vip_connections by start_year
@@ -409,19 +427,94 @@ V(g_vip_filtered)$color <- ifelse(V(g_vip_filtered)$type == "VIP", "blue", "oran
 V(g_vip_filtered)$size <- ifelse(V(g_vip_filtered)$type == "VIP", 8, 5)
 
 # Plot the network
-plot(g_vip_filtered, vertex.label = NA, vertex.size = V(g_vip_filtered)$size, edge.arrow.size = 0.5, 
+p2005<-plot(g_vip_filtered, vertex.label = NA, vertex.size = V(g_vip_filtered)$size, edge.arrow.size = 0.5, 
      vertex.color = V(g_vip_filtered)$color, main = paste("VIP Connections Network for", filter_year))
 
 ```
 
-```{r}
+In 2005, the network shows a relatively sparse structure with a moderate number of connections. VIPs (blue nodes) are moderately interconnected, indicating a balanced distribution of influence among several key players.
 
+```{r}
+# Specify the year
+filter_year <- 2015
+
+# Filter vip_connections by start_year
+vip_connections_filtered_2015 <- vip_connections %>%
+  filter(format(start_date, "%Y") == filter_year)
+
+# Create the graph object from the filtered vip_connections
+g_vip_filtered_2015 <- graph_from_data_frame(d = vip_connections_filtered_2015, directed = TRUE)
+
+# Identify VIPs (nodes_people) and Companies
+V(g_vip_filtered_2015)$type <- ifelse(V(g_vip_filtered_2015)$name %in% nodes_people$id, "VIP", "Company")
+
+# Define colors and sizes
+V(g_vip_filtered_2015)$color <- ifelse(V(g_vip_filtered_2015)$type == "VIP", "blue", "orange")
+V(g_vip_filtered_2015)$size <- ifelse(V(g_vip_filtered_2015)$type == "VIP", 8, 5)
+
+# Plot the network
+p2015 <- plot(g_vip_filtered_2015, vertex.label = NA, vertex.size = V(g_vip_filtered_2015)$size, edge.arrow.size = 0.5, 
+     vertex.color = V(g_vip_filtered_2015)$color, main = paste("VIP Connections Network for", filter_year))
 
 
 
 ```
 
+By 2015, the network has grown denser, suggesting increased interconnectedness and influence consolidation. More VIPs are connected to multiple companies (orange nodes), indicating a significant rise in their influence and control over the network.
+
 ```{r}
 
+# Specify the year
+filter_year <- 2025
+
+# Filter vip_connections by start_year
+vip_connections_filtered_2025 <- vip_connections %>%
+  filter(format(start_date, "%Y") == filter_year)
+
+# Create the graph object from the filtered vip_connections
+g_vip_filtered_2025 <- graph_from_data_frame(d = vip_connections_filtered_2025, directed = TRUE)
+
+# Identify VIPs (nodes_people) and Companies
+V(g_vip_filtered_2025)$type <- ifelse(V(g_vip_filtered_2025)$name %in% nodes_people$id, "VIP", "Company")
+
+# Define colors and sizes
+V(g_vip_filtered_2025)$color <- ifelse(V(g_vip_filtered_2025)$type == "VIP", "blue", "orange")
+V(g_vip_filtered_2025)$size <- ifelse(V(g_vip_filtered_2025)$type == "VIP", 8, 5)
+
+# Plot the network
+p2025 <- plot(g_vip_filtered_2025, vertex.label = NA, vertex.size = V(g_vip_filtered_2025)$size, edge.arrow.size = 0.5, 
+     vertex.color = V(g_vip_filtered_2025)$color, main = paste("VIP Connections Network for", filter_year))
 
 ```
+
+The network continues to expand in 2025, displaying even more complexity and interconnections. This period likely represents a peak in influence for several VIPs, with many of them owning shares in numerous companies, suggesting increased market control.
+
+```{r}
+# Specify the year
+filter_year <- 2035
+
+# Filter vip_connections by start_year
+vip_connections_filtered_2035 <- vip_connections %>%
+  filter(format(start_date, "%Y") == filter_year)
+
+# Create the graph object from the filtered vip_connections
+g_vip_filtered_2035 <- graph_from_data_frame(d = vip_connections_filtered_2035, directed = TRUE)
+
+# Identify VIPs (nodes_people) and Companies
+V(g_vip_filtered_2035)$type <- ifelse(V(g_vip_filtered_2035)$name %in% nodes_people$id, "VIP", "Company")
+
+# Define colors and sizes
+V(g_vip_filtered_2035)$color <- ifelse(V(g_vip_filtered_2035)$type == "VIP", "blue", "orange")
+V(g_vip_filtered_2035)$size <- ifelse(V(g_vip_filtered_2035)$type == "VIP", 8, 5)
+
+# Plot the network
+p2035 <- plot(g_vip_filtered_2035, vertex.label = NA, vertex.size = V(g_vip_filtered_2035)$size, edge.arrow.size = 0.5, 
+     vertex.color = V(g_vip_filtered_2035)$color, main = paste("VIP Connections Network for", filter_year))
+
+```
+
+In 2035, the network structure shifts to a star-like formation, where a central VIP appears to have gained substantial influence, with direct connections to numerous companies. This indicates a significant consolidation of power and influence, where a few key players dominate the network.
+
+::: callout-caution
+Initially, influence is distributed among several key players, but over the years, it becomes concentrated among fewer individuals, leading to a highly centralized network by 2035. This centralization of power can be both an opportunity for streamlined decision-making and a risk for monopolistic control. Monitoring these changes is crucial for regulatory bodies like FishEye to ensure fair practices and prevent illegal activities within the network.
+:::

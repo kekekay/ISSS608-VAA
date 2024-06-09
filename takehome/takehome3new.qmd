@@ -109,7 +109,6 @@ Actions:
 
 ```{r}
 
-
 # Handle missing values in nodes
 # Select crucial columns and fill missing values where appropriate
 cleaned_nodes <- mc3_data[["nodes"]] %>%
@@ -274,7 +273,155 @@ glimpse(cleaned_links)
 ## 
 
 ```{r}
+# Split the nodes into people and companies
+nodes_people <- cleaned_nodes %>% filter(entity2 == "Person")
+nodes_company <- cleaned_nodes %>% filter(entity2 == "Organization")
 
+
+
+```
+
+```{r}
+
+# Filter the links to include only ownership-related edges
+links_owns <- cleaned_links %>% filter(event2 == "Owns")
+
+```
+
+```{r}
+nodes_people <- nodes_people %>%
+  rowwise() %>%
+  mutate('no_owns' = sum(links_owns$source == id))
+
+nodes_people$no_owns <- as.numeric(nodes_people$no_owns)
+
+```
+
+```{r}
+# Calculate the unique counts of 'no_owns' and their corresponding counts and percentages
+owns_summary <- nodes_people %>%
+  group_by(no_owns) %>%
+  summarise(count = n()) %>%
+  mutate(percentage = (count / sum(count)) * 100)
+
+# Display the summary
+print(owns_summary)
+
+```
+
+```{r}
+# Define the threshold for 'influential'
+vip_threshold <- 91
+
+# Filter to keep only influential people and select relevant columns
+vip <- nodes_people %>%
+  filter(no_owns >= vip_threshold) %>%
+  select(id, country, dob, last_edited_date, date_added, no_owns)
+
+# Display the updated vip data frame
+glimpse(vip)
+
+
+```
+
+```{r}
+# Filter links_owns to keep only those connections where the source is in the vip list
+vip_connections <- links_owns %>%
+  filter(source %in% vip$id)%>%
+  select(source, target,start_date,end_date,last_edited_date, date_added)
+
+# Display the updated vip_connections data frame
+glimpse(vip_connections)
+
+```
+
+```{r}
+# Create graph from VIP connections
+g_vip <- graph_from_data_frame(d = vip_connections, directed = TRUE)
+
+# Identify VIPs and Companies
+V(g_vip)$type <- ifelse(V(g_vip)$name %in% nodes_people$id, "VIP", "Company")
+
+# Define colors and sizes
+V(g_vip)$color <- ifelse(V(g_vip)$type == "VIP", "blue", "orange")
+V(g_vip)$size <- ifelse(V(g_vip)$type == "VIP", 8, 5)
+
+# Plot the network
+plot(g_vip, vertex.label = NA, vertex.size = V(g_vip)$size, edge.arrow.size = 0.5, 
+     vertex.color = V(g_vip)$color, main = "VIP Connections Network")
+```
+
+The plot represents the VIP Connections Network, with blue nodes indicating influential VIPs and orange nodes representing companies they own. Directed edges illustrate ownership, pointing from VIPs to companies. This visualization highlights the dense centrality of VIPs, showcasing their extensive control across multiple companies. By examining these connections, we can infer the structure and extent of VIP influence within the network and help FishEye identify influential individuals within the business network, highlighting ownership structures and central figures. By tracking ownership changes over time, FishEye can pinpoint who controls companies involved in illegal fishing activities.
+
+While this plot provides a static snapshot, in the following we shall create similar plots for different time periods can reveal changes in ownership and influence over time.
+
+### Aggregate Ownership Changes by Year
+
+```{r}
+change_over_time1 <- links_owns %>%
+  group_by(start_date) %>%
+  summarize(count = n()) %>%
+  drop_na()
+
+links_owns<- links_owns %>%
+  mutate(start_year = format(start_date, "%Y"))
+
+# Aggregate ownership changes by year
+change_over_time <- links_owns %>%
+  group_by(start_year) %>%
+  summarize(count = n()) %>%
+  drop_na()
+
+```
+
+Create plots to visualize the changes in ownership over time.
+
+```{r}
+# Plot changes over time
+ggplot(change_over_time, aes(x = as.numeric(start_year), y = count)) +
+  geom_line() +
+  geom_point() +
+  labs(title = "Changes in Ownership Over Time",
+       x = "Year",
+       y = "Number of Ownership Changes") +
+  theme_minimal()
+
+```
+
+Given the significant increase in data from 2005 onwards, focusing on every 5 years from 2005 to 2035 would provide a more detailed analysis of changes in ownership and influence.
+
+```{r}
+# Specify the year you want to filter by
+filter_year <- 2005
+
+# Filter vip_connections by start_year
+vip_connections_filtered <- vip_connections %>%
+  filter(format(start_date, "%Y") == filter_year)
+
+# Create the graph object from the filtered vip_connections
+g_vip_filtered <- graph_from_data_frame(d = vip_connections_filtered, directed = TRUE)
+
+# Identify VIPs (nodes_people) and Companies
+V(g_vip_filtered)$type <- ifelse(V(g_vip_filtered)$name %in% nodes_people$id, "VIP", "Company")
+
+# Define colors and sizes
+V(g_vip_filtered)$color <- ifelse(V(g_vip_filtered)$type == "VIP", "blue", "orange")
+V(g_vip_filtered)$size <- ifelse(V(g_vip_filtered)$type == "VIP", 8, 5)
+
+# Plot the network
+plot(g_vip_filtered, vertex.label = NA, vertex.size = V(g_vip_filtered)$size, edge.arrow.size = 0.5, 
+     vertex.color = V(g_vip_filtered)$color, main = paste("VIP Connections Network for", filter_year))
+
+```
+
+```{r}
+
+
+
+
+```
+
+```{r}
 
 
 ```

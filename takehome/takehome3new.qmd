@@ -3,7 +3,7 @@ title: "takehome3"
 ---
 
 ```{r}
-pacman::p_load(tidytext, readtext, quanteda, tidyverse, jsonlite, igraph, tidygraph, ggraph, visNetwork, clock, graphlayouts)
+pacman::p_load(tidytext, readtext, quanteda, tidyverse, jsonlite, igraph, tidygraph, ggraph, visNetwork, clock, graphlayouts,ggplot2)
 ```
 
 ## **Importing JSON File**
@@ -28,15 +28,12 @@ mc3_data <- fromJSON("data/mc3_fixed.json")
 ```
 
 ```{r}
-view(mc3_data[["nodes"]])
-view(mc3_data[["links"]])
-```
-
-```{r}
 head(mc3_data)
 ```
 
-Missing Values
+## Data Cleaning
+
+### Missing Values
 
 Identify the percentage of missing values within the dataset
 
@@ -77,7 +74,7 @@ print(links_missing_by_column)
 ```
 
 ::: panel-tabset
-### Observations:
+Observations:
 
 -   **Nodes Data:**
 
@@ -91,7 +88,7 @@ print(links_missing_by_column)
 
     -   `end_date` has a very high percentage of missing values (around 99.5%).
 
-## Actions:
+Actions:
 
 -   Filled missing values in `HeadOfOrg` with "Unknown".
 
@@ -156,7 +153,7 @@ glimpse(cleaned_links)
 
 ```
 
-check for duplicates
+### Check for duplicates and data types
 
 ```{r}
 # Check for duplicate nodes
@@ -165,14 +162,82 @@ cleaned_nodes <- cleaned_nodes %>% distinct()
 # Check for duplicate edges
 cleaned_links <- cleaned_links %>% distinct()
 
+# Ensure correct data types for nodes
+cleaned_nodes <- cleaned_nodes %>%
+  mutate(
+    id = as.character(id),
+    type = as.character(type),
+    country = as.character(country),
+    HeadOfOrg = as.character(HeadOfOrg),
+    revenue = as.numeric(revenue),
+    `_last_edited_by` = as.character(`_last_edited_by`),
+    `_last_edited_date` = as.POSIXct(`_last_edited_date`, format="%Y-%m-%dT%H:%M:%S"),
+    `_date_added` = as.POSIXct(`_date_added`, format="%Y-%m-%dT%H:%M:%S"),
+    `_raw_source` = as.character(`_raw_source`),
+    `_algorithm` = as.character(`_algorithm`)
+  )
+
+# Ensure correct data types for links
+cleaned_links <- cleaned_links %>%
+ mutate(
+    source = as.character(source),
+    target = as.character(target),
+    type = as.character(type),
+    start_date = as.POSIXct(start_date, format="%Y-%m-%dT%H:%M:%S"),
+    end_date = ifelse(end_date == "Unknown", NA, as.POSIXct(end_date, format="%Y-%m-%dT%H:%M:%S")),
+    `_last_edited_by` = as.character(`_last_edited_by`),
+    `_last_edited_date` = as.POSIXct(`_last_edited_date`, format="%Y-%m-%dT%H:%M:%S"),
+    `_date_added` = as.POSIXct(`_date_added`, format="%Y-%m-%dT%H:%M:%S"),
+    `_raw_source` = as.character(`_raw_source`),
+    `_algorithm` = as.character(`_algorithm`)
+  )
+
 # Print cleaned data for inspection
 glimpse(cleaned_nodes)
 glimpse(cleaned_links)
 
+
+```
+
+### **Changing field name**
+
+```{r}
+cleaned_nodes <- cleaned_nodes %>%
+  rename("last_edited_by" = "_last_edited_by",
+         "date_added" = "_date_added",
+         "last_edited_date" = "_last_edited_date",
+         "raw_source" = "_raw_source",
+         "algorithm" = "_algorithm") 
+
+cleaned_links<- cleaned_links %>%
+  rename("last_edited_by" = "_last_edited_by",
+         "date_added" = "_date_added",
+         "last_edited_date" = "_last_edited_date",
+         "raw_source" = "_raw_source",
+         "algorithm" = "_algorithm") 
+```
+
+### Split *'type'* column into separate columns
+
+```{r}
+word_list <- strsplit(cleaned_nodes$type, "\\.")
+max_elements <- max(lengths(word_list))
+word_list_padded <- lapply(word_list, 
+function(x) c(x, rep(NA, max_elements - length(x))))
+word_df <- do.call(rbind, word_list_padded)
+colnames(word_df) <- paste0("event", 1:max_elements)
+word_df <- as_tibble(word_df) %>%
+  select(event2, event3)
+class(word_df)
+```
+
+```{r}
+cleaned_nodes <- cleaned_nodes %>%
+  cbind(word_df)
+```
+
+```{r}
+write_rds(cleaned_nodes, "data/rds/cleaned_nodes.rds")
 ```
 
 first question
-
-```{r}
-
-```

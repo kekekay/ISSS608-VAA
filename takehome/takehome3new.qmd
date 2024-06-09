@@ -41,10 +41,6 @@ Importing preprocessed mc3_fixed.json file
 mc3_data <- fromJSON("data/mc3_fixed.json")
 ```
 
-```{r}
-head(mc3_data)
-```
-
 ## Data Cleaning
 
 ### Missing Values
@@ -61,6 +57,8 @@ calculate_missing_percentage <- function(df) {
 }
 ```
 
+Missing percentage of nodes
+
 ```{r}
 nodes_missing_percentage <- calculate_missing_percentage(mc3_data[["nodes"]])
 nodes_missing_percentage
@@ -68,8 +66,9 @@ nodes_missing_percentage
 
 ```{r}
 nodes_missing_by_column <- sapply(mc3_data[["nodes"]], function(x) sum(is.na(x)) / length(x) * 100)
-nodes_missing_by_column
 ```
+
+Missing percentage of edges
 
 ```{r}
 links_missing_percentage <- calculate_missing_percentage(mc3_data[["links"]])
@@ -79,8 +78,10 @@ links_missing_by_column <- sapply(mc3_data[["links"]], function(x) sum(is.na(x))
 links_missing_by_column
 ```
 
+Print missing percentages
+
 ```{r}
-# Print missing percentages
+
 print(nodes_missing_percentage)
 print(nodes_missing_by_column)
 print(links_missing_percentage)
@@ -88,7 +89,9 @@ print(links_missing_by_column)
 ```
 
 ::: panel-tabset
-Observations:
+## Observations:
+
+::: panel-tabset
 
 -   **Nodes Data:**
 
@@ -101,8 +104,9 @@ Observations:
 -   **Links Data:**
 
     -   `end_date` has a very high percentage of missing values (around 99.5%).
+:::
 
-Actions:
+## Actions:
 
 -   Filled missing values in `HeadOfOrg` with "Unknown".
 
@@ -111,9 +115,11 @@ Actions:
 -   Filled missing values in `start_date` and `end_date` with "Unknown".
 :::
 
+Handle missing values in nodes
+
 ```{r}
 
-# Handle missing values in nodes
+
 # Select crucial columns and fill missing values where appropriate
 cleaned_nodes <- mc3_data[["nodes"]] %>%
   select(id, type, country, HeadOfOrg, revenue,ProductServices,PointOfContact,founding_date,TradeDescription,dob,
@@ -231,6 +237,8 @@ cleaned_links<- cleaned_links %>%
 
 ### Split *'type'* column into separate columns
 
+We are going to tidy the type column by creating two columns "entity2,entity3".
+
 ```{r}
 word_list1 <- strsplit(cleaned_nodes$type, "\\.")
 max_elements1 <- max(lengths(word_list1))
@@ -242,6 +250,8 @@ word_df1 <- as_tibble(word_df1) %>%
   select(entity2, entity3)
 class(word_df1)
 ```
+
+The steps below will be used to split text in type column into two columns
 
 ```{r}
 word_list <- strsplit(cleaned_links$type, "\\.")
@@ -255,6 +265,8 @@ word_df <- as_tibble(word_df) %>%
 class(word_df)
 ```
 
+Since the output above is a matrix, the code chunk above is used to convert word_df into a tibble data.frame.
+
 ```{r}
 cleaned_nodes <- cleaned_nodes %>%
   cbind(word_df1)
@@ -265,14 +277,14 @@ cleaned_links <- cleaned_links %>%
   cbind(word_df)
 ```
 
+The code chunk above appends the extracted columns back to edges tibble data.frame.
+
 ```{r}
 write_rds(cleaned_nodes, "data/rds/cleaned_nodes.rds")
 write_rds(cleaned_links, "data/rds/cleaned_links.rds")
 ```
 
-```{r}
-glimpse(cleaned_links)
-```
+above code write into R **rds** file format.
 
 ## Question 3
 
@@ -529,6 +541,10 @@ For part 1, the focus was on identifying the network associated with SouthSeafoo
 
 #### Part 1: Identify SouthSeafood Express Corp Node
 
+-   Locate the node representing SouthSeafood Express Corp in the network.
+
+-   Create a visualization of the network associated with SouthSeafood Express Corp before any changes.
+
 ```{r}
 
 # Extract edges connected to SouthSeafood Express Corp
@@ -555,12 +571,12 @@ plot(g_southseafood, vertex.label = NA, vertex.size = 5, edge.arrow.size = 0.5,
 
 #### Part 1: Identify Competing Businesses
 
+Identify and highlight competing businesses within the extracted sub-network.
+
 ```{r}
-# Assume competing businesses are defined by their type (e.g., FishingCompany)
+
 competing_businesses <- cleaned_nodes %>%
   filter(entity3 == "FishingCompany" & id != "SouthSeafood Express Corp")
-
-print(competing_businesses)
 
 ```
 
@@ -585,6 +601,10 @@ g_combined <- graph_from_data_frame(d = combined_edges, vertices = combined_node
 
 #### Part 1: Analyze Temporal Changes based on *start_year*
 
+-   Filter the data to show the network before and after the illegal fishing incident(assume the incident happened in 2023)
+
+-   Create visualizations to compare the network structure and connections before and after the incident.
+
 ```{r}
 # Assume the accident happened in 2023
 incident_year <- 2023
@@ -604,6 +624,8 @@ g_after <- graph_from_data_frame(d = edges_after, vertices = combined_nodes, dir
 ```
 
 #### Part 1: Visualize the Temporal Changes
+
+Identify and highlight significant changes in connections and structure due to the illegal fishing behavior and subsequent closure.
 
 ```{r}
 par(mfrow = c(2, 1))

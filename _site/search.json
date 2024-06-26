@@ -292,5 +292,187 @@
     "title": "Take-home Exercise 2:Singapore Private Residential Market",
     "section": "Step 3: Use ggplot2 to create a pie chart representing the number of transactions for each property type",
     "text": "Step 3: Use ggplot2 to create a pie chart representing the number of transactions for each property type\n\n\nCode\ncolors &lt;- c(\"#8dd3c7\", \"#ffffb3\", \"#bebada\", \"#fb8072\", \"#80b1d3\", \"#fdb462\", \"#b3de69\")\n\nggplot(transaction_counts, aes(x = \"\", y = Transactions, fill = `Property Type`)) +\n  geom_bar(stat = \"identity\", width = 4, color = \"white\") +\n  coord_polar(theta = \"y\") +\n  scale_fill_manual(values = colors) +\n  geom_label_repel(\n    aes(label = sprintf(\"%s (%.1f%%)\", `Property Type`, Percentage)),\n    nudge_x = 2 * cos(seq(0, 2 * pi, length.out = nrow(transaction_counts) + 1)[-nrow(transaction_counts) - 1]),  # Adjust for radial placement\n    nudge_y = 1 * sin(seq(0, 2 * pi, length.out = nrow(transaction_counts) + 1)[-nrow(transaction_counts) - 1]),  # Adjust for radial placement\n    arrow = arrow(length = unit(0.02, \"npc\"), type = \"closed\", ends = \"last\"),\n    size = 4,  # Adjust font size for readability\n    color = \"black\"\n  ) +\n  labs(title = \"No. of Transactions by Property Type\") +\n  theme_void() +\n  theme(legend.position = \"none\")  \n\n\n\n\n\n\n\n\n\nSince condominiums and apartments account for the highest number of transactions, we will conduct a detailed market analysis of their unit prices per square foot.\n\nCondominiumApartment\n\n\n\n\nCode\n# Filter data for only Condominiums\ncondo_data &lt;- full_data %&gt;%\n  filter(`Property Type` == \"Condominium\")\n\n# Sampling data\nsampled_data &lt;- condo_data[sample(nrow(condo_data), 500), ]\nsampled_data$`Transacted Price ($)` &lt;- sampled_data$`Transacted Price ($)` / 1000\n\n# Calculate Price per Sq ft\nsampled_data$`Price per Sq ft` &lt;- sampled_data$`Transacted Price ($)` / sampled_data$`Area (SQFT)`\n\n# Create the ggplot\nP3 &lt;- ggplot(data = sampled_data, aes(x = `Area (SQFT)`, y = `Transacted Price ($)`, size = `Price per Sq ft`, color = `Type of Sale`, \n                                      text = paste(\"Price: \", `Transacted Price ($)`, \"k&lt;br&gt;Area: \", `Area (SQFT)`, \n                                                   \"sqft&lt;br&gt;Type of Sale: \", `Type of Sale`, \n                                                   \"&lt;br&gt;Price per Sq ft: $\", round(`Price per Sq ft`, 2), \"/sqft\"))) +\n  geom_point(alpha = 0.3) +  # Increased transparency\n  geom_smooth(method = \"lm\", se = FALSE) +\n  scale_size_area(max_size = 5) +  # Area scaled size for proportional visibility\n  scale_x_continuous(limits = c(200, 4000), breaks = seq(400, 4000, by = 200)) +\n  scale_y_continuous(limits = c(0, 10000)) +\n  labs(x = \"Condominium Size (sq ft)\", y = \"Sale Price (in $000)\",\n       title = \"Market Analysis: Unit Price(Sqft) for Condominiums\") +\n  guides(size = guide_legend(title = \"Price per Sq ft\")) +\n  theme_minimal() +\n  theme(legend.position = \"bottom\",\n        panel.grid.major = element_line(color = \"gray\", size = 0.5),\n        panel.grid.minor = element_line(color = \"lightgray\", size = 0.25),\n        axis.text.x = element_text(angle = 45, hjust = 1))\n\n# Convert to interactive plot\nP3_interactive &lt;- ggplotly(P3, tooltip = \"text\")\n\n# Print the interactive plot\nP3_interactive\n\n\n\n\n\n\nThe plot legend indicates that resale properties generally have the lowest unit prices, as illustrated by the smaller size of the points. Resale transactions, which predominantly occur within the 400-1800 sq ft range, do not necessarily become more expensive with increased size, highlighting a non-linear pricing structure for larger properties.\nConversely, new sales show a clearer trend where larger units command higher prices per square foot, though the maximum size for new condominiums caps at 2400 sq ft, smaller compared to resales which extend up to 3600 sq ft.\nSubsales display relatively stable pricing, ranging from $1.62 to $2.25 per sq ft, which suggests a less volatile segment within the condominium market.\n\n\n\n\nCode\n# Filter data for only apartments\nap_data &lt;- full_data %&gt;% \n  filter(`Property Type` == \"Apartment\")\n\n# Sampling data\nsampled_data1 &lt;- ap_data[sample(nrow(ap_data), 500), ]\nsampled_data1$`Transacted Price ($)` &lt;- sampled_data1$`Transacted Price ($)` / 1000\n\n# Calculate Price per Sq ft\nsampled_data1$`Price per Sq ft` &lt;- sampled_data1$`Transacted Price ($)` / sampled_data1$`Area (SQFT)`\n\n# Create the ggplot\np2 &lt;- ggplot(data = sampled_data1, aes(x = `Area (SQFT)`, y = `Transacted Price ($)`, size = `Price per Sq ft`, color = `Type of Sale`, \n                                      text = paste(\"Price: \", `Transacted Price ($)`, \"k&lt;br&gt;Area: \", `Area (SQFT)`, \n                                                   \"sqft&lt;br&gt;Type of Sale: \", `Type of Sale`, \n                                                   \"&lt;br&gt;Price per Sq ft: $\", round(`Price per Sq ft`, 2), \"/sqft\"))) +\n  geom_point(alpha = 0.3) +  # Increased transparency\n  geom_smooth(method = \"lm\", se = FALSE) +\n  scale_size_area(max_size = 5) +  # Area scaled size for proportional visibility\n  scale_x_continuous(limits = c(200, 4000), breaks = seq(400, 4000, by = 200)) +\n  scale_y_continuous(limits = c(0, 10000)) +\n  labs(x = \"Apartment Size (sq ft)\", y = \"Sale Price (in $000)\",\n       title = \"Market Analysis: Unit Price(Sqft) for Apartment\") +\n  guides(size = guide_legend(title = \"Price per Sq ft\")) +\n  theme_minimal() +\n  theme(legend.position = \"bottom\",\n        panel.grid.major = element_line(color = \"gray\", size = 0.5),\n        panel.grid.minor = element_line(color = \"lightgray\", size = 0.25),\n        axis.text.x = element_text(angle = 45, hjust = 1))\n\n# Convert to interactive plot\np2_interactive &lt;- ggplotly(p2, tooltip = \"text\")\n\n# Print the interactive plot\np2_interactive\n\n\n\n\n\n\nWhen comparing apartments to condominiums, apartments tend to be smaller in size, which could explain their generally lower transaction prices.\nThe pricing trends for apartments largely mirror those observed in condominiums, with the exception of some notable differences in the resale market for larger units. Specifically, resale apartments larger than 2000 sq ft exhibit significant variability in unit price. A striking example is a 3100 sq ft unit priced at an unusually low $0.98 per sq ft, which stands out as a potential outlier. This outlier may warrant further investigation to determine underlying factors that contribute to such an anomalously low unit price, such as location disadvantages, property condition, or market anomalies at the time of sale.\n\n\n\n\n\n\n\n\n\n\nTips of Interactive Features:\n\n\n\n\nUse the “Autoscale” button to automatically adjust the plot scale to fit within the view. This ensures all data is visible after zooming in or out.\nClick on legend entries to toggle the visibility of data points for each type of sale.\nHover over any data point to see detailed information, such as the price, area, type of sale, and price per square foot. This provides immediate insights without additional data references.\nThe size of each point indicates the price per square foot; larger points denote higher prices, allowing for quick visual assessment of property values.\nMove your cursor along the x-axis to compare data points from different types of sales at the same condominium size. This hover comparison helps identify trends and outliers within specific size ranges."
+  },
+  {
+    "objectID": "Hands_on_exercise/Hands_on_ex3/Hands-on_Ex03_2.html",
+    "href": "Hands_on_exercise/Hands_on_ex3/Hands-on_Ex03_2.html",
+    "title": "Hands-on Exercise 3 - Programming Animated Statistical Graphics with R",
+    "section": "",
+    "text": "Learning Objectives:"
+  },
+  {
+    "objectID": "Hands_on_exercise/Hands_on_ex3/Hands-on_Ex03_2.html#terminology",
+    "href": "Hands_on_exercise/Hands_on_ex3/Hands-on_Ex03_2.html#terminology",
+    "title": "Hands-on Exercise 3 - Programming Animated Statistical Graphics with R",
+    "section": "Terminology",
+    "text": "Terminology\n\nFrame: In an animated line graph, each frame represents a different point in time or a different category. When the frame changes, the data points on the graph are updated to reflect the new data.\nAnimation Attributes: The settings that control how the animation behaves. For example:\n\nDuration of each frame\nEasing function used between frame transitions\nStart the animation from the current frame or from the beginning"
+  },
+  {
+    "objectID": "Hands_on_exercise/Hands_on_ex3/Hands-on_Ex03_2.html#installing-and-loading-the-required-libraries",
+    "href": "Hands_on_exercise/Hands_on_ex3/Hands-on_Ex03_2.html#installing-and-loading-the-required-libraries",
+    "title": "Hands-on Exercise 3 - Programming Animated Statistical Graphics with R",
+    "section": "Installing and loading the required libraries",
+    "text": "Installing and loading the required libraries\nThe following R packages will be used:\n\nplotly, R library for plotting interactive statistical graphs.\ngganimate, an ggplot extension for creating animated statistical graphs.\ngifski converts video frames to GIF animations using pngquant’s fancy features for efficient cross-frame palettes and temporal dithering. It produces animated GIFs that use thousands of colors per frame.\ngapminder: An excerpt of the data available at Gapminder.org. We just want to use its country_colors scheme.\ntidyverse, a family of modern R packages specially designed to support data science, analysis and communication task including creating static statistical graphs.\n\n\npacman::p_load(readxl, gifski, gapminder,\n               plotly, gganimate, tidyverse)"
+  },
+  {
+    "objectID": "Hands_on_exercise/Hands_on_ex3/Hands-on_Ex03_2.html#importing-the-data",
+    "href": "Hands_on_exercise/Hands_on_ex3/Hands-on_Ex03_2.html#importing-the-data",
+    "title": "Hands-on Exercise 3 - Programming Animated Statistical Graphics with R",
+    "section": "Importing the Data",
+    "text": "Importing the Data\n\nThe code chunk below imports GlobalPopulation.xlsx into R environment by using read_xls() function of readr package.\nreadr is a pacakge within tidyverse.\n\n\ncol &lt;- c(\"Country\", \"Continent\")\nglobalPop &lt;- read_xls(\"data/GlobalPopulation.xls\",\n                      sheet=\"Data\") %&gt;%\n  mutate_at(col, as.factor) %&gt;%\n  mutate(Year = as.integer(Year))\n\n\n\n\n\n\n\nTip\n\n\n\nInstead of using mutate_at(), across() can be used to derive the same output"
+  },
+  {
+    "objectID": "Hands_on_exercise/Hands_on_ex3/Hands-on_Ex03_2.html#building-a-static-population-bubble-plot",
+    "href": "Hands_on_exercise/Hands_on_ex3/Hands-on_Ex03_2.html#building-a-static-population-bubble-plot",
+    "title": "Hands-on Exercise 3 - Programming Animated Statistical Graphics with R",
+    "section": "Building a static population bubble plot",
+    "text": "Building a static population bubble plot\nIn the code chunk below, the basic ggplot2 functions are used to create a static bubble plot.\n\nPlotCode\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nggplot(globalPop, aes(x = Old, y = Young, \n                      size = Population, \n                      colour = Country)) +\n  geom_point(alpha = 0.7, \n             show.legend = FALSE) +\n  scale_colour_manual(values = country_colors) +\n  scale_size(range = c(2, 12)) +\n  labs(title = 'Year: {frame_time}', \n       x = '% Aged', \n       y = '% Young')"
+  },
+  {
+    "objectID": "Hands_on_exercise/Hands_on_ex3/Hands-on_Ex03_2.html#building-the-animated-bubble-plot",
+    "href": "Hands_on_exercise/Hands_on_ex3/Hands-on_Ex03_2.html#building-the-animated-bubble-plot",
+    "title": "Hands-on Exercise 3 - Programming Animated Statistical Graphics with R",
+    "section": "Building the animated bubble plot",
+    "text": "Building the animated bubble plot\nIn the code chunk below,\n\ntransition_time() of gganimate is used to create transition through distinct states in time (i.e. Year).\nease_aes() is used to control easing of aesthetics.\n\nThe default is linear.\nOther methods are: quadratic, cubic, quartic, quintic, sine, circular, exponential, elastic, back, and bounce.\n\n\n\nPlotCode\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nggplot(globalPop, aes(x = Old, y = Young, \n                      size = Population, \n                      colour = Country)) +\n  geom_point(alpha = 0.7, \n             show.legend = FALSE) +\n  scale_colour_manual(values = country_colors) +\n  scale_size(range = c(2, 12)) +\n  labs(title = 'Year: {frame_time}', \n       x = '% Aged', \n       y = '% Young') +\n  transition_time(Year) +       \n  ease_aes('linear')"
+  },
+  {
+    "objectID": "Hands_on_exercise/Hands_on_ex3/Hands-on_Ex03_2.html#building-an-animated-bubble-plot-ggplotly-method",
+    "href": "Hands_on_exercise/Hands_on_ex3/Hands-on_Ex03_2.html#building-an-animated-bubble-plot-ggplotly-method",
+    "title": "Hands-on Exercise 3 - Programming Animated Statistical Graphics with R",
+    "section": "Building an animated bubble plot: ggplotly() method",
+    "text": "Building an animated bubble plot: ggplotly() method\nCreate an animated bubble plot by using ggplotly() method.\n\nAppropriate ggplot2 functions are used to create a static bubble plot. The output is then saved as an R object called gg.\nggplotly() is then used to convert the R graphic object into an animated svg object.\n\nAlthough show.legend = FALSE argument was used, the legend still appears on the plot. To overcome this problem, theme(legend.position='none') should be used\n\nPlotCode\n\n\n\n\n\n\n\n\n\n\n\ngg &lt;- ggplot(globalPop, \n       aes(x = Old, \n           y = Young, \n           size = Population, \n           colour = Country)) +\n  geom_point(aes(size = Population,\n                 frame = Year),\n             alpha = 0.7) +\n  scale_colour_manual(values = country_colors) +\n  scale_size(range = c(2, 12)) +\n  labs(x = '% Aged', \n       y = '% Young') + \n  theme(legend.position='none')\n\nggplotly(gg)"
+  },
+  {
+    "objectID": "Hands_on_exercise/Hands_on_ex3/Hands-on_Ex03_2.html#building-an-animated-bubble-plot-plot_ly-method",
+    "href": "Hands_on_exercise/Hands_on_ex3/Hands-on_Ex03_2.html#building-an-animated-bubble-plot-plot_ly-method",
+    "title": "Hands-on Exercise 3 - Programming Animated Statistical Graphics with R",
+    "section": "Building an animated bubble plot: plot_ly() method",
+    "text": "Building an animated bubble plot: plot_ly() method\nCreate an animated bubble plot by using plot_ly() method.\n\nPlotCode\n\n\n\n\n\n\n\n\n\n\n\nbp &lt;- globalPop %&gt;%\n  plot_ly(x = ~Old, \n          y = ~Young, \n          size = ~Population, \n          color = ~Continent,\n          sizes = c(2, 100),\n          frame = ~Year, \n          text = ~Country, \n          hoverinfo = \"text\",\n          type = 'scatter',\n          mode = 'markers'\n          ) %&gt;%\n  layout(showlegend = FALSE)\nbp"
+  },
+  {
+    "objectID": "Hands_on_exercise/Hands_on_ex3/Hands-on_Ex03_1.html",
+    "href": "Hands_on_exercise/Hands_on_ex3/Hands-on_Ex03_1.html",
+    "title": "Hands-on Exercise 3 - I Programming Interactive Data Visualisation with R",
+    "section": "",
+    "text": "Learning Objectives:"
+  },
+  {
+    "objectID": "Hands_on_exercise/Hands_on_ex3/Hands-on_Ex03_1.html#installing-and-loading-the-required-libraries",
+    "href": "Hands_on_exercise/Hands_on_ex3/Hands-on_Ex03_1.html#installing-and-loading-the-required-libraries",
+    "title": "Hands-on Exercise 3 - I Programming Interactive Data Visualisation with R",
+    "section": "Installing and loading the required libraries",
+    "text": "Installing and loading the required libraries\nThe following R packages will be used:\n\nggiraph for making ‘ggplot’ graphics interactive.\nplotly, R library for plotting interactive statistical graphs.\nDT provides an R interface to the JavaScript library DataTables that create interactive table on html page.\ntidyverse, a family of modern R packages specially designed to support data science, analysis and communication task including creating static statistical graphs.\npatchwork for combining multiple ggplot2 graphs into one figure.\n\nCode chunk below will be used to check if these packages have been installed and also will load them into the working R environment.\n\npacman::p_load(ggiraph, plotly, \n               patchwork, DT, tidyverse)"
+  },
+  {
+    "objectID": "Hands_on_exercise/Hands_on_ex3/Hands-on_Ex03_1.html#importing-the-data",
+    "href": "Hands_on_exercise/Hands_on_ex3/Hands-on_Ex03_1.html#importing-the-data",
+    "title": "Hands-on Exercise 3 - I Programming Interactive Data Visualisation with R",
+    "section": "Importing the Data",
+    "text": "Importing the Data\n\nThe code chunk below imports exam_data.csv into R environment by using read_csv() function of readr package.\nreadr is a pacakge within tidyverse.\n\n\nexam_data &lt;- read_csv(\"data/Exam_data.csv\")\n\nexam_data tibble data frame contains:\n\nYear end examination grades of a cohort of primary 3 students from a local school.\nThere are a total of seven attributes. Four of them are categorical data type and the other three are in continuous data type.\n\nThe categorical attributes are: ID, CLASS, GENDER and RACE.\nThe continuous attributes are: MATHS, ENGLISH and SCIENCE."
+  },
+  {
+    "objectID": "Hands_on_exercise/Hands_on_ex3/Hands-on_Ex03_1.html#tooltip-effect-with-tooltip-aesthetic",
+    "href": "Hands_on_exercise/Hands_on_ex3/Hands-on_Ex03_1.html#tooltip-effect-with-tooltip-aesthetic",
+    "title": "Hands-on Exercise 3 - I Programming Interactive Data Visualisation with R",
+    "section": "Tooltip effect with tooltip aesthetic",
+    "text": "Tooltip effect with tooltip aesthetic\nBelow shows a typical code chunk to plot an interactive statistical graph by using ggiraph package. \nFirst, an interactive version of ggplot2 geom (i.e. geom_dotplot_interactive()) will be used to create the basic graph. Then, girafe() will be used to generate an svg object to be displayed on an html page.\n\nPlotCode\n\n\n\n\n\n\n\n\n\n\n\np &lt;- ggplot(data=exam_data, \n       aes(x = MATHS)) +\n  geom_dotplot_interactive(\n    aes(tooltip = ID),\n    stackgroups = TRUE, \n    binwidth = 1, \n    method = \"histodot\") +\n  scale_y_continuous(NULL, \n                     breaks = NULL)\ngirafe(\n  ggobj = p,\n  width_svg = 6,\n  height_svg = 6*0.618\n)"
+  },
+  {
+    "objectID": "Hands_on_exercise/Hands_on_ex3/Hands-on_Ex03_1.html#displaying-multiple-information-on-tooltip",
+    "href": "Hands_on_exercise/Hands_on_ex3/Hands-on_Ex03_1.html#displaying-multiple-information-on-tooltip",
+    "title": "Hands-on Exercise 3 - I Programming Interactive Data Visualisation with R",
+    "section": "Displaying multiple information on tooltip",
+    "text": "Displaying multiple information on tooltip\nThe first three lines of codes in the code chunk create a new field called tooltip. At the same time, it populates text in ID and CLASS fields into the newly created field. Next, this newly created field is used as tooltip field as shown in the code of line 7. By hovering the mouse pointer on an data point of interest, the student’s ID will be displayed.\n\nPlotCode\n\n\n\n\n\n\n\n\n\n\n\nexam_data$tooltip &lt;- c(paste0(     \n  \"Name = \", exam_data$ID,         \n  \"\\n Class = \", exam_data$CLASS)) \n\np &lt;- ggplot(data=exam_data, \n       aes(x = MATHS)) +\n  geom_dotplot_interactive(\n    aes(tooltip = exam_data$tooltip), \n    stackgroups = TRUE,\n    binwidth = 1,\n    method = \"histodot\") +\n  scale_y_continuous(NULL,               \n                     breaks = NULL)\ngirafe(\n  ggobj = p,\n  width_svg = 8,\n  height_svg = 8*0.618\n)"
+  },
+  {
+    "objectID": "Hands_on_exercise/Hands_on_ex3/Hands-on_Ex03_1.html#customising-tooltop-style",
+    "href": "Hands_on_exercise/Hands_on_ex3/Hands-on_Ex03_1.html#customising-tooltop-style",
+    "title": "Hands-on Exercise 3 - I Programming Interactive Data Visualisation with R",
+    "section": "Customising Tooltop style",
+    "text": "Customising Tooltop style\nCode chunk below uses opts_tooltip() of ggiraph to customize tooltip rendering by add css declarations.\nNotice that the background colour of the tooltip is black and the font colour is white and bold.\n\nPlotCode\n\n\n\n\n\n\n\n\n\n\n\ntooltip_css &lt;- \"background-color:white; #&lt;&lt;\nfont-style:bold; color:black;\" #&lt;&lt;\n\np &lt;- ggplot(data=exam_data, \n       aes(x = MATHS)) +\n  geom_dotplot_interactive(              \n    aes(tooltip = ID),                   \n    stackgroups = TRUE,                  \n    binwidth = 1,                        \n    method = \"histodot\") +               \n  scale_y_continuous(NULL,               \n                     breaks = NULL)\ngirafe(                                  \n  ggobj = p,                             \n  width_svg = 6,                         \n  height_svg = 6*0.618,\n  options = list(    #&lt;&lt;\n    opts_tooltip(    #&lt;&lt;\n      css = tooltip_css)) #&lt;&lt;\n)                                        \n\n\n\n\n\n\n\n\n\n\nTip\n\n\n\nFor more customisations, refer to Customizing girafe objects"
+  },
+  {
+    "objectID": "Hands_on_exercise/Hands_on_ex3/Hands-on_Ex03_1.html#displaying-statistics-on-tooltip",
+    "href": "Hands_on_exercise/Hands_on_ex3/Hands-on_Ex03_1.html#displaying-statistics-on-tooltip",
+    "title": "Hands-on Exercise 3 - I Programming Interactive Data Visualisation with R",
+    "section": "Displaying statistics on tooltip",
+    "text": "Displaying statistics on tooltip\nCode chunk below shows an advanced way to customise tooltip. In this example, a function is used to compute 90% confident interval of the mean. The derived statistics are then displayed in the tooltip.\n\nPlotCode\n\n\n\n\n\n\n\n\n\n\n\ntooltip &lt;- function(y, ymax, accuracy = .01) {\n  mean &lt;- scales::number(y, accuracy = accuracy)\n  sem &lt;- scales::number(ymax - y, accuracy = accuracy)\n  paste(\"Mean maths scores:\", mean, \"+/-\", sem)\n}\n\ngg_point &lt;- ggplot(data=exam_data, \n                   aes(x = RACE),\n) +\n  stat_summary(aes(y = MATHS, \n                   tooltip = after_stat(  \n                     tooltip(y, ymax))),  \n    fun.data = \"mean_se\", \n    geom = GeomInteractiveCol,  \n    fill = \"light blue\"\n  ) +\n  stat_summary(aes(y = MATHS),\n    fun.data = mean_se,\n    geom = \"errorbar\", width = 0.2, size = 0.2\n  )\n\ngirafe(ggobj = gg_point,\n       width_svg = 8,\n       height_svg = 8*0.618)"
+  },
+  {
+    "objectID": "Hands_on_exercise/Hands_on_ex3/Hands-on_Ex03_1.html#hover-effect-with-data_id-aesthetic",
+    "href": "Hands_on_exercise/Hands_on_ex3/Hands-on_Ex03_1.html#hover-effect-with-data_id-aesthetic",
+    "title": "Hands-on Exercise 3 - I Programming Interactive Data Visualisation with R",
+    "section": "Hover effect with data_id aesthetic",
+    "text": "Hover effect with data_id aesthetic\nCode chunk below shows the second interactive feature of ggiraph, namely data_id.\nElements associated with a data_id (i.e CLASS) will be highlighted upon mouse over.\n\nPlotCode\n\n\n\n\n\n\n\n\n\n\n\np &lt;- ggplot(data=exam_data, \n       aes(x = MATHS)) +\n  geom_dotplot_interactive(           \n    aes(data_id = CLASS),             \n    stackgroups = TRUE,               \n    binwidth = 1,                        \n    method = \"histodot\") +               \n  scale_y_continuous(NULL,               \n                     breaks = NULL)\ngirafe(                                  \n  ggobj = p,                             \n  width_svg = 6,                         \n  height_svg = 6*0.618                      \n)                                        \n\n\n\n\n\n\n\n\n\n\nTip\n\n\n\nThe default value of the hover css is hover_css = “fill:orange;”."
+  },
+  {
+    "objectID": "Hands_on_exercise/Hands_on_ex3/Hands-on_Ex03_1.html#styling-hover-effect",
+    "href": "Hands_on_exercise/Hands_on_ex3/Hands-on_Ex03_1.html#styling-hover-effect",
+    "title": "Hands-on Exercise 3 - I Programming Interactive Data Visualisation with R",
+    "section": "Styling hover effect",
+    "text": "Styling hover effect\nIn the code chunk below, css codes are used to change the highlighting effect.\nElements associated with a data_id (i.e CLASS) will be highlighted upon mouse over.\n\nPlotCode\n\n\n\n\n\n\n\n\n\n\n\np &lt;- ggplot(data=exam_data, \n       aes(x = MATHS)) +\n  geom_dotplot_interactive(              \n    aes(data_id = CLASS),              \n    stackgroups = TRUE,                  \n    binwidth = 1,                        \n    method = \"histodot\") +               \n  scale_y_continuous(NULL,               \n                     breaks = NULL)\ngirafe(                                  \n  ggobj = p,                             \n  width_svg = 6,                         \n  height_svg = 6*0.618,\n  options = list(                        \n    opts_hover(css = \"fill: #202020;\"),  \n    opts_hover_inv(css = \"opacity:0.2;\") \n  )                                        \n)"
+  },
+  {
+    "objectID": "Hands_on_exercise/Hands_on_ex3/Hands-on_Ex03_1.html#plot-1-combining-tooltip-and-hover-effect",
+    "href": "Hands_on_exercise/Hands_on_ex3/Hands-on_Ex03_1.html#plot-1-combining-tooltip-and-hover-effect",
+    "title": "Hands-on Exercise 3 - I Programming Interactive Data Visualisation with R",
+    "section": "Plot 1: Combining tooltip and hover effect",
+    "text": "Plot 1: Combining tooltip and hover effect\nThe tooltip and hover effects are combined in the interactive statistical graph in the code chunk below.\nElements associated with a data_id (i.e CLASS) will be highlighted upon mouse over. At the same time, the tooltip will show the CLASS.\n\nPlotCode\n\n\n\n\n\n\n\n\n\n\n\np &lt;- ggplot(data=exam_data, \n       aes(x = MATHS)) +\n  geom_dotplot_interactive(              \n    aes(tooltip = CLASS, \n        data_id = CLASS),              \n    stackgroups = TRUE,                  \n    binwidth = 1,                        \n    method = \"histodot\") +               \n  scale_y_continuous(NULL,               \n                     breaks = NULL)\ngirafe(                                  \n  ggobj = p,                             \n  width_svg = 6,                         \n  height_svg = 6*0.618,\n  options = list(                        \n    opts_hover(css = \"fill: #202020;\"),  \n    opts_hover_inv(css = \"opacity:0.2;\") \n  )                                        \n)"
+  },
+  {
+    "objectID": "Hands_on_exercise/Hands_on_ex3/Hands-on_Ex03_1.html#click-effect-with-onclick",
+    "href": "Hands_on_exercise/Hands_on_ex3/Hands-on_Ex03_1.html#click-effect-with-onclick",
+    "title": "Hands-on Exercise 3 - I Programming Interactive Data Visualisation with R",
+    "section": "Click effect with onclick",
+    "text": "Click effect with onclick\nonclick argument of ggiraph provides hotlink interactivity on the web. Web document link with a data object will be displayed on the web browser upon mouse click.\nThe code chunk below shown an example of onclick.\n\nPlotCode\n\n\n\n\n\n\n\n\n\n\n\nexam_data$onclick &lt;- sprintf(\"window.open(\\\"%s%s\\\")\",\n\"https://www.moe.gov.sg/schoolfinder?journey=Primary%20school\",\nas.character(exam_data$ID))\n\np &lt;- ggplot(data=exam_data, \n       aes(x = MATHS)) +\n  geom_dotplot_interactive(              \n    aes(onclick = onclick),              \n    stackgroups = TRUE,                  \n    binwidth = 1,                        \n    method = \"histodot\") +               \n  scale_y_continuous(NULL,               \n                     breaks = NULL)\ngirafe(                                  \n  ggobj = p,                             \n  width_svg = 6,                         \n  height_svg = 6*0.618)                                        \n\n\n\n\n\n\n\n\n\n\nTip\n\n\n\nClick actions must be a string column in the dataset containing valid javascript instructions."
+  },
+  {
+    "objectID": "Hands_on_exercise/Hands_on_ex3/Hands-on_Ex03_1.html#coordinated-multiple-views-with-ggiraph",
+    "href": "Hands_on_exercise/Hands_on_ex3/Hands-on_Ex03_1.html#coordinated-multiple-views-with-ggiraph",
+    "title": "Hands-on Exercise 3 - I Programming Interactive Data Visualisation with R",
+    "section": "Coordinated Multiple Views with ggiraph",
+    "text": "Coordinated Multiple Views with ggiraph\nWhen a data point of one of the dotplot is selected, the corresponding data point ID on the second data visualisation will be highlighted too.\nIn order to build a coordinated multiple views, the following programming strategy will be used:\n\nAppropriate interactive functions of ggiraph will be used to create the multiple views.\npatchwork function of patchwork package will be used inside girafe function to create the interactive coordinated multiple views.\n\nThe data_id aesthetic is critical to link observations between plots and the tooltip aesthetic is optional but nice to have when mouse over a point.\n\nPlotCode\n\n\n\n\n\n\n\n\n\n\n\np1 &lt;- ggplot(data=exam_data, \n       aes(x = MATHS)) +\n  geom_dotplot_interactive(              \n    aes(data_id = ID),              \n    stackgroups = TRUE,                  \n    binwidth = 1,                        \n    method = \"histodot\") +  \n  coord_cartesian(xlim=c(0,100)) + \n  scale_y_continuous(NULL,               \n                     breaks = NULL)\n\np2 &lt;- ggplot(data=exam_data, \n       aes(x = ENGLISH)) +\n  geom_dotplot_interactive(              \n    aes(data_id = ID),              \n    stackgroups = TRUE,                  \n    binwidth = 1,                        \n    method = \"histodot\") + \n  coord_cartesian(xlim=c(0,100)) + \n  scale_y_continuous(NULL,               \n                     breaks = NULL)\n\ngirafe(code = print(p1 + p2), \n       width_svg = 6,\n       height_svg = 3,\n       options = list(\n         opts_hover(css = \"fill: #202020;\"),\n         opts_hover_inv(css = \"opacity:0.2;\")\n         )\n       )"
+  },
+  {
+    "objectID": "Hands_on_exercise/Hands_on_ex3/Hands-on_Ex03_1.html#there-are-two-ways-to-create-interactive-graph-by-using-plotly-they-are",
+    "href": "Hands_on_exercise/Hands_on_ex3/Hands-on_Ex03_1.html#there-are-two-ways-to-create-interactive-graph-by-using-plotly-they-are",
+    "title": "Hands-on Exercise 3 - I Programming Interactive Data Visualisation with R",
+    "section": "There are two ways to create interactive graph by using plotly, they are:",
+    "text": "There are two ways to create interactive graph by using plotly, they are:\n\nby using plot_ly(), and\nby using ggplotly()"
+  },
+  {
+    "objectID": "Hands_on_exercise/Hands_on_ex3/Hands-on_Ex03_1.html#creating-an-interactive-scatter-plot-plot_ly-method",
+    "href": "Hands_on_exercise/Hands_on_ex3/Hands-on_Ex03_1.html#creating-an-interactive-scatter-plot-plot_ly-method",
+    "title": "Hands-on Exercise 3 - I Programming Interactive Data Visualisation with R",
+    "section": "Creating an interactive scatter plot: plot_ly() method",
+    "text": "Creating an interactive scatter plot: plot_ly() method\nThe code chunk below shows an example a basic interactive plot created by using plot_ly().\n\nPlotCode\n\n\n\n\n\n\n\n\n\n\n\nplot_ly(data = exam_data, \n             x = ~MATHS, \n             y = ~ENGLISH)"
+  },
+  {
+    "objectID": "Hands_on_exercise/Hands_on_ex3/Hands-on_Ex03_1.html#working-with-visual-variable-plot_ly-method",
+    "href": "Hands_on_exercise/Hands_on_ex3/Hands-on_Ex03_1.html#working-with-visual-variable-plot_ly-method",
+    "title": "Hands-on Exercise 3 - I Programming Interactive Data Visualisation with R",
+    "section": "Working with visual variable: plot_ly() method",
+    "text": "Working with visual variable: plot_ly() method\nIn the code chunk below, color argument is mapped to a qualitative visual variable (i.e. RACE).\n\nPlotCode\n\n\n\n\n\n\n\n\n\n\n\nplot_ly(data = exam_data, \n        x = ~ENGLISH, \n        y = ~MATHS, \n        color = ~RACE)"
+  },
+  {
+    "objectID": "Hands_on_exercise/Hands_on_ex3/Hands-on_Ex03_1.html#creating-an-interactive-scatter-plot-ggplotly-method",
+    "href": "Hands_on_exercise/Hands_on_ex3/Hands-on_Ex03_1.html#creating-an-interactive-scatter-plot-ggplotly-method",
+    "title": "Hands-on Exercise 3 - I Programming Interactive Data Visualisation with R",
+    "section": "Creating an interactive scatter plot: ggplotly() method",
+    "text": "Creating an interactive scatter plot: ggplotly() method\nThe code chunk below plots an interactive scatter plot by using ggplotly().\n\nPlotCode\n\n\n\n\n\n\n\n\n\n\n\np &lt;- ggplot(data=exam_data, \n            aes(x = MATHS,\n                y = ENGLISH)) +\n  geom_point(size=1) +\n  coord_cartesian(xlim=c(0,100),\n                  ylim=c(0,100))\nggplotly(p)\n\n\n\n\n\n\n\n\n\n\nTip\n\n\n\nThe only extra line you need to include in the code chunk is ggplotly()."
+  },
+  {
+    "objectID": "Hands_on_exercise/Hands_on_ex3/Hands-on_Ex03_1.html#interactive-data-visualisation---crosstalk-methods",
+    "href": "Hands_on_exercise/Hands_on_ex3/Hands-on_Ex03_1.html#interactive-data-visualisation---crosstalk-methods",
+    "title": "Hands-on Exercise 3 - I Programming Interactive Data Visualisation with R",
+    "section": "Interactive Data Visualisation - crosstalk methods",
+    "text": "Interactive Data Visualisation - crosstalk methods\nCrosstalk is an add-on to the htmlwidgets package. It extends htmlwidgets with a set of classes, functions, and conventions for implementing cross-widget interactions (currently, linked brushing and filtering).\n\nDT::datatable(exam_data, class= \"compact\")"
+  },
+  {
+    "objectID": "Hands_on_exercise/Hands_on_ex3/Hands-on_Ex03_1.html#linked-brushing-crosstalk-method",
+    "href": "Hands_on_exercise/Hands_on_ex3/Hands-on_Ex03_1.html#linked-brushing-crosstalk-method",
+    "title": "Hands-on Exercise 3 - I Programming Interactive Data Visualisation with R",
+    "section": "Linked brushing: crosstalk method",
+    "text": "Linked brushing: crosstalk method\nCode chunk below is used to implement coordinated brushing.\n\nPlotCode\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nd &lt;- highlight_key(exam_data) \np &lt;- ggplot(d, \n            aes(ENGLISH, \n                MATHS)) + \n  geom_point(size=1) +\n  coord_cartesian(xlim=c(0,100),\n                  ylim=c(0,100))\n\ngg &lt;- highlight(ggplotly(p),        \n                \"plotly_selected\")  \n\ncrosstalk::bscols(gg,               \n                  DT::datatable(d), \n                  widths = 5)"
   }
 ]

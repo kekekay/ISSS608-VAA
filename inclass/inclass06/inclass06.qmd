@@ -1,97 +1,113 @@
 ---
-title: "In class 6"
+title: "In-Class Exercise 6"
 author: "Ke Ke"
-date: "18 May 2024"
-date-modified: "last-modified"
-format:
-  html:
-    code-fold: true
-    code-tools: true
+date: "18 May, 2024"
+date-modified: last-modified
 execute: 
   eval: true
-  #echo: true display code chunk
+  echo: true
   warning: false
   freeze: true
 ---
 
-# Part 1
+# Getting Started
+
+## Installing and loading the required libraries
+
+The following R packages will be used:
+
+-   corporaexplorer
+
+-   stringi
+
+-   rvest
+
+-   readtext
+
+-   tidyverse
+
+Code chunk below will be used to check if these packages have been installed and also will load them into the working R environment.
 
 ```{r}
-pacman::p_load(tidyverse,readtext,corporaexplorer,quanteda,tidytext,readr)
+pacman::p_load(corporaexplorer, stringi, rvest, readtext, tidyverse)
 ```
+
+## **The Data**
+
+Downloading the King James Bible from Project Gutenberg:
+
+### **Importing data**
 
 ```{r}
 bible <- readr::read_lines("http://www.gutenberg.org/cache/epub/10/pg10.txt")
 ```
 
-```{r}
-head(bible)
-```
+### Collapse into a string
 
 ```{r}
-# Collapsing into one string.
 bible <- paste(bible, collapse = "\n")
-
-
 ```
 
+### **Identify the beginning and end of the Bible**
+
+Technique borrowed from <https://quanteda.io/articles/pkgdown/replication/digital-humanities.html>
+
 ```{r}
-# Identifying the beginning and end of the Bible / stripping PJ metadata
- # (technique borrowed from https://quanteda.io/articles/pkgdown/replication/digital-humanities.html).
+
 start_v <- stri_locate_first_fixed(bible, "The First Book of Moses: Called Genesis")[1]
 end_v <- stri_locate_last_fixed(bible, "Amen.")[2]
 bible <- stri_sub(bible, start_v, end_v)
-
 ```
 
-```{r}
+### **Split string into books**
 
-# In the file, every book in the bible is preceded by five newlines,
-  # which we use to split our string into a vector where each element is a book.
+Every book in the bible is preceded by five newlines, which can be used to split the string into a vector where each element is a book.
+
+```{r}
 books <- stri_split_regex(bible, "\n{5}") %>%
     unlist %>%
-    .[-40]  # Removing the heading "The New Testament of the King James Bible",
-              # which also was preceded by five newlines.
-
-
+    .[-40]  
+# Removing the heading "The New Testament of the King James Bible"
 ```
 
+### **Replacing newlines and space**
+
 ```{r}
-# Because of the structure of the text in the file:
-  # Replacing double or more newlines with two newlines, and a single newline with space.
 books <- str_replace_all(books, "\n{2,}", "NEW_PARAGRAPH") %>%
     str_replace_all("\n", " ") %>%
     str_replace_all("NEW_PARAGRAPH", "\n\n")
 books <- books[3:68]  # The two first elements are not books
-
-
 ```
 
+### **Identifying chapters within books**
+
 ```{r}
-# Identifying new chapters within each book and split the text into chapters.
-# (The first characters in chapter 2 will e.g. be 2:1)
 chapters <- str_replace_all(books, "(\\d+:1 )", "NEW_CHAPTER\\1") %>%
     stri_split_regex("NEW_CHAPTER")
-
 ```
 
-```{r}
+### **Remove chapter headings**
 
-# Removing the chapter headings from the text (we want them as metadata).
+```{r}
 chapters <- lapply(chapters, function(x) x[-1])
 ```
 
+### **Retrieve shorter book titles**
+
+Retrieve shorter book titles from esv.org to save space in the corpus map plot.
+
 ```{r}
-# We are not quite happy with the long book titles in the King James Bible,
-  # so we retrieve shorter versions from esv.org which will take up less
-  # space in the corpus map plot.
 book_titles <- read_html("https://www.esv.org/resources/esv-global-study-bible/list-of-abbreviations") %>%
   html_nodes("td:nth-child(1)") %>%
   html_text() %>%
   .[13:78]  # Removing irrelevant elements after manual inspection.
+```
 
-# We add a column indicating whether a book belongs to the Old or New Testament,
-#   knowing that they contain respectively 39 and 27 books.
+### Identify belonging of book
+
+Indicate whether a book belongs to the Old or New Testament.
+
+```{r}
 testament <- c(rep("Old", 39), rep("New", 27))
 ```
 
@@ -101,32 +117,144 @@ bible_df <- tibble::tibble(Text = chapters,
                            Book = book_titles,
                            Testament = testament)
 
-# We want each chapter to be one row, but keep the metadata (book and which testament).
+# Each chapter to be one row, but keep the metadata (which book and which testament).
 bible_df <- tidyr::unnest(bible_df, Text)
 ```
 
+### **Organise Data**
+
+Corpus not organised by date, so `date_based_corpus` to `FALSE`.
+
 ```{r}
-# As this is a corpus which is not organised by date,
-  # we set `date_based_corpus` to `FALSE`.
-# Because we want to organise our exploration around the books in the Bible,
-  # we pass `"Book"` to the `grouping_variable` argument.
-# We specify which metadata columns we want to be displayed in the
-  # "Document information" tab, using the `columns_doc_info` argument.
 KJB <- prepare_data(dataset = bible_df,
                     date_based_corpus = FALSE,
                     grouping_variable = "Book",
                     columns_doc_info = c("Testament", "Book"))
 ```
 
-[Prepare data for corpus exploration](https://kgjerde.github.io/corporaexplorer/reference/prepare_data.html)
-
-```{r}
-#to double confirm the object has been created succesfully 
-class(KJB)
-```
+## **Explore Corpus**
 
 ```{r}
 explore(KJB)
 ```
 
-Part 2
+# Getting Started
+
+## Installing and loading the required libraries
+
+The following R packages will be used:
+
+-   ggforce
+
+-   tidygraph
+
+-   ggraph
+
+-   visNetwork
+
+-   skimr
+
+-   tidytext
+
+-   tidyverse
+
+-   graphlayouts
+
+-   jsonlite
+
+Code chunk below will be used to check if these packages have been installed and also will load them into the working R environment.
+
+```{r}
+pacman::p_load(ggforce, tidygraph, ggraph, 
+               visNetwork, skimr, tidytext,
+               tidyverse, graphlayouts, jsonlite)
+```
+
+## **Importing JSON File**
+
+```{r}
+mc3_data <- fromJSON("data/MC3.json")
+```
+
+Verify data type
+
+```{r}
+class(mc3_data)
+```
+
+## Extract edges
+
+```{r}
+mc3_edges <-
+  as_tibble(mc3_data$links) %>%
+  distinct() %>%
+  mutate(source =
+           as.character(source),
+         target =
+           as.character(target),
+         type = as.character(type)) %>%
+  group_by(source,target,type) %>% #to count number of unique links
+  summarise(weights = n()) %>%
+  filter(source!=target) %>%
+  ungroup()
+```
+
+## Extract nodes
+
+```{r}
+mc3_nodes <-
+  as_tibble(mc3_data$nodes) %>%
+  mutate(country = as.character(country),
+         id = as.character(id),
+         product_services = as.character(product_services),
+         revenue_omu = as.numeric(as.character(revenue_omu)),
+         type = as.character(type)) %>%
+  select(id, country, type, revenue_omu, product_services)
+```
+
+### **Modifying network nodes and edges**
+
+```{r}
+id1 <- mc3_edges %>%
+  select(source) %>%
+  rename(id = source)
+
+id2 <- mc3_edges %>%
+  select(target) %>%
+  rename (id = target)
+mc3_nodes1 <- rbind(id1, id2) %>%
+  distinct() %>%
+  left_join(mc3_nodes,
+            unmatched = "drop")
+```
+
+### **Constructing graph**
+
+```{r}
+mc3_graph <- tbl_graph(nodes = mc3_nodes1,
+                       edges = mc3_edges,
+                       directed = FALSE) %>%
+  mutate(betweeness_centrality = 
+           centrality_betweenness(),
+         closeness_centrality = 
+           centrality_closeness())
+```
+
+```{r}
+mc3_graph
+```
+
+## Graph Visualisation
+
+```{r}
+mc3_graph %>%
+  filter(betweeness_centrality >= 300000) %>%
+  ggraph(layout = "fr") +
+  geom_edge_link(aes(alpha = 0.5)) +
+  geom_node_point(aes(
+    size = betweeness_centrality,
+    color = "lightblue",
+    alpha = 0.5)) +
+  scale_size_continuous(range=c(1,10)) +
+  theme_graph()
+```

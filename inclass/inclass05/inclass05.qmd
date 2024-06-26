@@ -1,60 +1,130 @@
 ---
-title: "In class 5"
+title: "In-Class Exercise 5"
 author: "Ke Ke"
-date: "11 May 2024"
-date-modified: "last-modified"
-format:
-  html:
-    code-fold: true
-    code-tools: true
+date: "11 May, 2024"
+date-modified: last-modified
 execute: 
   eval: true
-  #echo: true display code chunk
+  echo: true
   warning: false
   freeze: true
 ---
 
+# Getting Started
+
+## Installing and loading the required libraries
+
+The following R packages will be used:
+
+-   tidytext
+
+-   tidyverse
+
+-   readtext
+
+-   quanteda
+
+Code chunk below will be used to check if these packages have been installed and also will load them into the working R environment.
+
 ```{r}
-pacman::p_load(tidyverse,readtext,quanteda,tidytext)
+pacman::p_load(tidytext, readtext, quanteda, tidytext, tidyverse)
+```
+
+## **Importing Multiple Text Files from Multiple Folders**
+
+### **Creating a folder list**
+
+```{r}
+data_folder <- "data/articles/"
+```
+
+### **Define a function to read all files from a folder into a data frame**
+
+```{r}
+text_data <- readtext(paste0("data/articles","/*"))
+# alternate version: text_data <- readtext("data/articles/*")
+```
+
+Check dataframe
+
+```{r}
+corpus_text <- corpus(text_data)
+summary(corpus_text, 5)
+```
+
+### **Text Data Processing**
+
+-    [`unnest_tokens()`](https://www.rdocumentation.org/packages/tidytext/versions/0.3.1/topics/unnest_tokens) of **tidytext** package is used to split the dataset into tokens
+
+-    [`stop_words()`](https://rdrr.io/cran/tidytext/man/stop_words.html) is used to remove stop-words
+
+```{r}
+text_data
 ```
 
 ```{r}
-setwd("C:/kekekay/ISSS608-VAA/inclass/inclass05/data")
+# Tokenize the text column
+unnest_words <- text_data %>%   
+  unnest_tokens(output = word, input = text) 
+
+# Filter tokens to include only alphabetic characters and remove stop words
+unnest_words <- filter(unnest_words, 
+                       str_detect(word, "[a-z']$"),          
+                       !word %in% stop_words$word)
+```
+
+View dataframe
+
+```{r}
+head(unnest_words)
+```
+
+The code chunk below calculates individual word frequencies to explore common words in the dataset.
+
+```{r}
+unnest_words %>%
+  count(word,sort = TRUE)
 ```
 
 ```{r}
-text_data <- readtext(paste0("MC1/articles","/*"))
-#text_data <- readtext("MC1/articles/*")
-```
-
-```{r}
-usenet_words <- text_data %>%   
-  unnest_tokens(word, text) %>%   
-  filter(str_detect(word, "[a-z']$"),        
-         !word %in% stop_words$word)
-```
-
-```{r}
-usenet_words %>%   count(word, sort = TRUE)
-```
-
-to split 'text_data' first column by using `tidyr` or `stringr`
-
-```{r}
-text_data_splitted <- text_data %>% 
+text_data_splitted <- text_data %>%
   separate_wider_delim("doc_id",
                        delim = "__0__",
                        names = c("X","Y"),
                        too_few = "align_end")
 ```
 
+### **JSONLite**
+
 ```{r}
-pacman::p_load(jsonlite,tidyverse)
+pacman::p_load(jsonlite, tidyverse)
 ```
 
 ```{r}
-#setwd("C:/kekekay/ISSS608-VAA/inclass/inclass05/data")
-mc1_data <- fromJSON("MC1/mc1.json")
+mc1_data <- fromJSON("data/mc1.json")
+mc2_data <- fromJSON("data/mc2.json")
 ```
 
-instead of using igraph, we tend to use tidygraph
+The mc3.json file shows an error message indicating that there's an invalid character in the JSON text, specifically "NaN". As "NaN" is not recognised as a valid value, preprocessing of the JSON file to replace "NaN" is required.
+
+```{r}
+# Read the JSON file as text
+json_text <- readLines("data/mc3.json")
+
+# Replace "NaN" with "null"
+json_text_fixed <- gsub("NaN", "null", json_text)
+
+# Write the fixed JSON text back to a file
+writeLines(json_text_fixed, "data/mc3_fixed.json")
+```
+
+```{r}
+mc3_data <- fromJSON("data/mc3_fixed.json")
+```
+
+## To view the dataframe
+
+```{r}
+view(mc1_data[["nodes"]])
+view(mc1_data[["links"]])
+```

@@ -1,7 +1,7 @@
 ---
-title: "In class ex 04"
+title: "In-Class Exercise 4 - Fundamentals of Visual Analytics"
 author: "Ke Ke"
-date: "April 20, 2024"
+date: "May 04, 2024"
 date-modified: last-modified
 execute: 
   eval: true
@@ -10,166 +10,244 @@ execute:
   freeze: true
 ---
 
+Learning Objectives:
+
+-   Create visual graphics with rich statistical information using ggstatsplot package
+-   Use performance package to visualise model diagnostics
+-   Use parameters package to visualise model parameters
+
+# Getting Started
+
+[**ggstatsplot**](https://indrajeetpatil.github.io/ggstatsplot/) is an extension of [**ggplot2**](https://ggplot2.tidyverse.org/) package for creating graphics with details from statistical tests included in the information-rich plots themselves.
+
+-   To provide alternative statistical inference methods by default
+
+-   To follow besst practices for statistical reporting
+
+-   For all statistical tests resulted in the plots, the default template abides by the [APA gold standard](https://my.ilstu.edu/~jhkahn/apastats.html) for statistical reporting
+
+## Installing and loading the required libraries
+
+The following R packages will be used:
+
+-   [**ggstatsplot**](https://indrajeetpatil.github.io/ggstatsplot/)is an extension of ggplot2 package for creating graphics with details from statstical tests included in the plots themselces
+
+-   [**tidyverse**](https://www.tidyverse.org/), a family of modern R packages specially designed to support data science, analysis and communication task including creating static statistical graphs.
+
+Code chunk below will be used to check if these packages have been installed and also will load them into the working R environment.
+
 ```{r}
-pacman:: p_load(tidyverse,ggstatsplot)
+pacman::p_load(ggstatsplot, tidyverse)
 ```
 
+## Importing the Data
+
+-   The code chunk below imports *exam_data.csv* into R environment by using [*read_csv()*](https://readr.tidyverse.org/reference/read_delim.html) function of [**readr**](https://readr.tidyverse.org/) package.
+
+-   **readr** is a pacakge within tidyverse.
+
 ```{r}
-wh<-read_csv("data/WHData-2018.csv")
-exam<-read_csv("data/exam_data.csv")
+exam <- read_csv("data/Exam_data.csv")
 ```
 
-```{r}
-set.seed(1234)
+**exam_data** tibble data frame contains:
 
-#how to extract the data 
+-   Year end examination grades of a cohort of primary 3 students from a local school.
+
+-   There are a total of seven attributes. Four of them are categorical data type and the other three are in continuous data type.
+
+    -   The categorical attributes are: ID, CLASS, GENDER and RACE.
+
+    -   The continuous attributes are: MATHS, ENGLISH and SCIENCE.
+
+## **One-sample test: *gghistostats()* method**
+
+In the code chunk below, [*gghistostats()*](https://indrajeetpatil.github.io/ggstatsplot/reference/gghistostats.html) is used to to build an visual of one-sample test on English scores.
+
+::: panel-tabset
+## Plot
+
+```{r,echo=FALSE}
+set.seed(1234) # for reproducibility
 
 p <- gghistostats(
   data = exam,
   x = ENGLISH,
   type = "parametric",
   test.value = 60,
-  bin.args = list(
-              color = "pink",
-              fill="grey",
-              alpha = 0.7
-  ),
-  normal.curve = FALSE,#default is false
-  normal.curve.args = list(linewidth = 2),
-  xlab = "English scores"
+  bin.args = list(color = "black",
+                  fill = "skyblue",
+                  alpha = 0.7),
+  normal.curve = TRUE, #default value is FALSE
+  normal.curve.args = list(linewidth = .5),
+  xlab = "English Scores"
 )
+
+p
 ```
+
+## Code
+
+```{r, eval=FALSE}
+set.seed(1234) # for reproducibility
+
+p <- gghistostats(
+  data = exam,
+  x = ENGLISH,
+  type = "parametric",
+  test.value = 60,
+  bin.args = list(color = "black",
+                  fill = "skyblue",
+                  alpha = 0.7),
+  normal.curve = FALSE, #default value is FALSE
+  normal.curve.args = list(linewidth = .5),
+  xlab = "English Scores"
+)
+
+p
+```
+:::
+
+Default information: - statistical details - Bayes Factor - sample sizes - distribution summary
+
+### **Extracting expressions and data frames with statistical details**
+
+[ggstatsplot](https://indrajeetpatil.github.io/ggstatsplot/) also offers a convenience function to extract data frames with statistical details that are used to create expressions displayed in [ggstatsplot](https://indrajeetpatil.github.io/ggstatsplot/) plots.
 
 ```{r}
 extract_stats(p)
 ```
 
-```{r}
-#look for mean
-gghistostats(
-  data = exam,
-  x = ENGLISH,
-  type = "parametric",
-  test.value = 60,
-  bin.args = list(
-              color = "pink",
-              fill="grey",
-              alpha = 0.7
-  ),
-  normal.curve = FALSE,
-  normal.curve.args = list(linewidth = 2),
-  xlab = "English scores"
-)
-```
+## ***ggdotplotstats()***
 
-```{r}
-#look for median
-gghistostats(
-  data = exam,
-  x = ENGLISH,
-  type = "np",
-  test.value = 60,
-  bin.args = list(
-              color = "pink",
-              fill="grey",
-              alpha = 0.7
-  ),
-  normal.curve = FALSE,
-  normal.curve.args = list(linewidth = 2),
-  xlab = "English scores"
-)
-```
+In the code chunk below, the function `ggdotplotstats` is used to provide an easy way to make **publication-ready dot plots/charts** with appropriate and selected statistical details embedded in the plot itself.
 
-```{r}
-#look for trimmed mean
-gghistostats(
-  data = exam,
-  x = ENGLISH,
-  type = "robust",
-  test.value = 60,
-  bin.args = list(
-              color = "pink",
-              fill="grey",
-              alpha = 0.7
-  ),
-  normal.curve = FALSE,
-  normal.curve.args = list(linewidth = 2),
-  xlab = "English scores"
-)
-```
+::: panel-tabset
+## Plot
 
-```{r}
-#bayesian
-gghistostats(
-  data = exam,
-  x = ENGLISH,
-  type = "bayes",
-  test.value = 60,
-  bin.args = list(
-              color = "pink",
-              fill="grey",
-              alpha = 0.7
-  ),
-  normal.curve = TRUE,#add in a normal distribution curve 
-  normal.curve.args = list(linewidth = 0.5),
-  xlab = "English scores"
-)
-```
+```{r, echo=FALSE}
 
-we still can add in confidence interval setting
-
-"a logical value' - \> either a binary or T/F value
-
-```{r}
 ggdotplotstats(
   data = exam,
-  x = ENGLISH,
+  x = ENGLISH, 
   y = CLASS,
-  title = "",
-  xlab = ""
+  title = "p",
+  xlab = "FALSE"
 )
 ```
 
-Before we perform any within group analysis, we need to transform the data.
+## Code
+
+```{r, eval=FALSE}
+
+ggdotplotstats(
+  data = exam,
+  x = ENGLISH, 
+  y = CLASS,
+  title = "p",
+  xlab = "FALSE"
+)
+```
+:::
+
+Default information: - statistical details - Bayes Factor - sample sizes - distribution summary
+
+## ***ggwithinstats()***
+
+Transform data into suitable format for plot
 
 ```{r}
 exam_long <- exam %>%
   pivot_longer(
     cols = ENGLISH:SCIENCE,
     names_to = "SUBJECT",
-    values_to = "SCORES" 
-  )%>%
-  filter(CLASS =="3A")
+    values_to = "SCORES"
+  ) %>%
+  filter(CLASS == "3A")
+
 ```
 
-```{r}
+In the code chunk below, the function `ggwithinstats` is designed to facilitate **data exploration**, and for making highly customizable **publication-ready plots**, with relevant statistical details included in the plot itself if desired.
+
+::: panel-tabset
+## Plot
+
+```{r,echo=FALSE}
+
 ggwithinstats(
-  data = exam_long,
-  x = "SUBJECT" ,
-  y = "SCORES" ,
-  type = "NP",
-  title = "wITHIN GROUPS"
+  data = filter(exam_long,
+                SUBJECT %in%
+                  c("MATHS", "SCIENCE")),
+  x = SUBJECT, 
+  y = SCORES,
+  type = "p"
 )
 ```
 
-```{r}
+## Code
+
+```{r, eval=FALSE}
+
+ggwithinstats(
+  data = filter(exam_long,
+                SUBJECT %in%
+                  c("MATHS", "SCIENCE")),
+  x = SUBJECT, 
+  y = SCORES,
+  type = "p"
+)
+```
+:::
+
+## **Significant Test of Correlation: *ggscatterstats()***
+
+In the code chunk below, [*ggscatterstats()*](https://indrajeetpatil.github.io/ggstatsplot/reference/ggscatterstats.html) is used to build a visual for Significant Test of Correlation between Maths scores and English scores.
+
+::: panel-tabset
+## Plot
+
+```{r,echo=FALSE}
+
 ggscatterstats(
   data = exam,
   x = MATHS,
   y = ENGLISH,
   marginal = TRUE,
-  label.var = ID,
-  label.expression = ENGLISH > 90 & MATHS > 90,
-)
+  label.var = ID, # show student ID 
+  label.expression = ENGLISH > 90 & MATHS > 90 #criteria
+  )                
 ```
 
-### performance
+## Code
 
-<https://easystats.github.io/easystats/>
+```{r, eval=FALSE}
+                                  
+ggscatterstats(
+  data = exam,
+  x = MATHS,
+  y = ENGLISH,
+  marginal = TRUE,
+  label.var = ID, # show student ID 
+  label.expression = ENGLISH > 90 & MATHS > 90 #criteria
+  )   
+```
+:::
+
+## **Visualising Models**
+
+Visualise model diagnostic and model parameters by using parameters package.
+
+-   Toyota Corolla case study will be used. The purpose of study is to build a model to discover factors affecting prices of used-cars by taking into consideration a set of explanatory variables.
+
+## **Installing and loading the required libraries**
+
+```{r}
+pacman::p_load(readxl, performance, parameters, see)
+```
 
 ### **Importing Excel file: readxl methods**
 
-the difference between read.csv is this only shows the
+In the code chunk below, [*read_xls()*](https://readxl.tidyverse.org/reference/read_excel.html) of [**readxl**](https://readxl.tidyverse.org/) package is used to import the data worksheet of `ToyotaCorolla.xls` workbook into R.
 
 ```{r}
 car_resale <- read_xls("data/ToyotaCorolla.xls", 
@@ -177,15 +255,19 @@ car_resale <- read_xls("data/ToyotaCorolla.xls",
 car_resale
 ```
 
-### **10.6.7 Visualising Regression Parameters: see methods**
+## **Multiple Regression Model using lm()**
 
-the length of the tick represents the certainty and uncertainty
+The code chunk below is used to calibrate a multiple linear regression model by using *lm()* of Base Stats of R.
 
 ```{r}
 model <- lm(Price ~ Age_08_04 + Mfg_Year + KM + 
-              Weight + Guarantee_Period, data = car_resale)
+              Weight + Guarantee_Period, data = car_resale) # list square model
 model
 ```
+
+## **Model Diagnostic: checking for multicolinearity:**
+
+In the code chunk, [*check_collinearity()*](https://easystats.github.io/performance/reference/check_collinearity.html) of [**performance**](https://easystats.github.io/performance/) package.
 
 ```{r}
 check_collinearity(model)
@@ -195,3 +277,116 @@ check_collinearity(model)
 check_c <- check_collinearity(model)
 plot(check_c)
 ```
+
+## **Model Diagnostic: checking normality assumption**
+
+In the code chunk, [*check_normality()*](https://easystats.github.io/performance/reference/check_normality.html) of [**performance**](https://easystats.github.io/performance/) package.
+
+::: panel-tabset
+## Plot
+
+```{r,echo=FALSE}
+
+model1 <- lm(Price ~ Age_08_04 + KM + 
+              Weight + Guarantee_Period, data = car_resale)
+
+check_n <- check_normality(model1)
+
+plot(check_n)
+
+```
+
+## Code
+
+```{r, eval=FALSE}
+
+model1 <- lm(Price ~ Age_08_04 + KM + 
+              Weight + Guarantee_Period, data = car_resale)
+
+check_n <- check_normality(model1)
+
+plot(check_n)
+```
+:::
+
+## **Model Diagnostic: Check model for homogeneity of variances**
+
+In the code chunk, [*check_heteroscedasticity()*](https://easystats.github.io/performance/reference/check_heteroscedasticity.html) of [**performance**](https://easystats.github.io/performance/) package.
+
+::: panel-tabset
+## Plot
+
+```{r,echo=FALSE}
+
+check_h <- check_heteroscedasticity(model1)
+plot(check_h)
+```
+
+## Code
+
+```{r, eval=FALSE}
+
+check_h <- check_heteroscedasticity(model1)
+plot(check_h)
+```
+:::
+
+## **Model Diagnostic: Complete check**
+
+We can also perform the complete by using [*check_model()*](https://easystats.github.io/performance/reference/check_model.html).
+
+::: panel-tabset
+## Plot
+
+```{r,echo=FALSE}
+check_model(model1)
+```
+
+## Code
+
+```{r, eval=FALSE}
+check_model(model1)
+```
+:::
+
+## **Visualising Regression Parameters: see methods**
+
+In the code below, plot() of see package and parameters() of parameters package is used to visualise the parameters of a regression model.
+
+::: panel-tabset
+## Plot
+
+```{r,echo=FALSE}
+
+plot(parameters(model1))
+```
+
+## Code
+
+```{r, eval=FALSE}
+
+plot(parameters(model1))
+```
+:::
+
+## **Visualising Regression Parameters: *ggcoefstats()* methods**
+
+In the code below, [*ggcoefstats()*](https://indrajeetpatil.github.io/ggstatsplot/reference/ggcoefstats.html) of ggstatsplot package to visualise the parameters of a regression model.
+
+::: panel-tabset
+## Plot
+
+```{r,echo=FALSE}
+
+ggcoefstats(model1, 
+            output = "plot")
+```
+
+## Code
+
+```{r, eval=FALSE}
+
+ggcoefstats(model1, 
+            output = "plot")
+```
+:::

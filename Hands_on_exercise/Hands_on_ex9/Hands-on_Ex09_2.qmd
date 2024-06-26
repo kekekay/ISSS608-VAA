@@ -1,6 +1,6 @@
 ---
 title: "Hands-on Exercise 9 Part II - Visual Correlation Analysis"
-author: "Alicia Loh"
+author: "Ke Ke"
 date: "10 June, 2024"
 date-modified: last-modified
 execute: 

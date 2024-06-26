@@ -32,7 +32,20 @@ website:
       - text: "Hands-on Exercise 8-2"
         href: "Hands_on_exercise/Hands_on_ex8/Hands-on_Ex08_2.qmd"  
       - text: "Hands-on Exercise 8-3"
-        href: "Hands_on_exercise/Hands_on_ex8/Hands-on_Ex08_3.qmd"  
+        href: "Hands_on_exercise/Hands_on_ex8/Hands-on_Ex08_3.qmd"
+      - text: "Hands-on Exercise 9-1"
+        href: "Hands_on_exercise/Hands_on_ex9/Hands-on_Ex09_1.qmd"
+      - text: "Hands-on Exercise 9-2"
+        href: "Hands_on_exercise/Hands_on_ex9/Hands-on_Ex09_2.qmd"  
+      - text: "Hands-on Exercise 9-3"
+        href: "Hands_on_exercise/Hands_on_ex9/Hands-on_Ex09_3.qmd"  
+      - text: "Hands-on Exercise 9-4"
+        href: "Hands_on_exercise/Hands_on_ex9/Hands-on_Ex09_4.qmd"
+      - text: "Hands-on Exercise 9-5"
+        href: "Hands_on_exercise/Hands_on_ex9/Hands-on_Ex09_5.qmd"  
+      - text: "Hands-on Exercise 10"
+        href: "Hands_on_exercise/Hands_on_ex10/Hands-on_Ex10.qmd"  
+        
         
     - text: "In-class Exercise"
       menu:
@@ -40,6 +53,16 @@ website:
         href: "inclass/inclass01/inclass01.qmd"
       - text: "In-class Exercise 2"
         href: "inclass/inclass02/inclass02.qmd"
+      - text: "In-class Exercise 4"
+        href: "inclass/inclass04/inclass04.qmd"
+      - text: "In-class Exercise 5"
+        href: "inclass/inclass05/inclass05.qmd"
+      - text: "In-class Exercise 6"
+        href: "inclass/inclass06/inclass06.qmd"
+      - text: "In-class Exercise 9"
+        href: "inclass/inclass06/inclass09.qmd"
+      - text: "In-class Exercise 10"
+        href: "inclass/inclass06/inclass10.qmd"
    
    
     - text: "Take-home Exercise"

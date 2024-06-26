@@ -1,6 +1,6 @@
 ---
 title: "Hands-on Exercise 4 -  Funnel Plots for Fair Comparisons"
-author: "Alicia Loh"
+author: "Ke Ke"
 date: "April 30, 2024"
 date-modified: last-modified
 execute: 

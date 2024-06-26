@@ -26,7 +26,9 @@ website:
       - text: "Hands-on Exercise 6"
         href: "Hands_on_exercise/Hands_on_ex6/Hands-on_Ex06.qmd"
       - text: "Hands-on Exercise 7"
-        href: "Hands_on_exercise/Hands_on_ex7/Hands-on_Ex07.qmd"  
+        href: "Hands_on_exercise/Hands_on_ex7/Hands-on_Ex07.qmd"
+      - text: "Hands-on Exercise 8-1"
+        href: "Hands_on_exercise/Hands_on_ex8/Hands-on_Ex08_1.qmd"  
         
         
     - text: "In-class Exercise"

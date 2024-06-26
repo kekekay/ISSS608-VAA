@@ -60,9 +60,9 @@ website:
       - text: "In-class Exercise 6"
         href: "inclass/inclass06/inclass06.qmd"
       - text: "In-class Exercise 9"
-        href: "inclass/inclass06/inclass09.qmd"
+        href: "inclass/inclass09/inclass09.qmd"
       - text: "In-class Exercise 10"
-        href: "inclass/inclass06/inclass10.qmd"
+        href: "inclass/inclass10/inclass10.qmd"
    
    
     - text: "Take-home Exercise"
